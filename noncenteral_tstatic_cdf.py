@@ -1,4 +1,9 @@
 import numpy as np
+import scipy
+
+from scipy.optimize import root
+
+import openpyxl
 
 
 def trap(x, ht, lb, lt, rt, rb):
@@ -40,3 +45,94 @@ data = [[0, 10],
 
 print(bad_data(data, 0, 10))
 
+
+
+web_data_copy = openpyxl.load_workbook('excel\WEBdatacopy.xlsx')
+
+wdc_sheet = web_data_copy['data']
+
+range_values = wdc_sheet['AI2:AJ175']
+
+#for row in range_values:
+#    for cell in row:
+#        print(cell.value, end=',')
+#    print()
+
+def box_and_whisker(x):
+    #calculate quartiles and inter-quartile ranges on right or left interval endpoints
+    #x is an n-vector of right or left interval endpoints
+    #calculate quartile index
+    nq = np.floor(len(x) / 4)
+
+    #skip this test if nq = 0
+    if (nq == 0):
+        return x
+    
+    #find first and third quartile values
+    remainder = np.mod(len(x), 4)
+    y = np.sort(x)
+    if (remainder == 0):
+        q25 = (y[int(nq)] + y[int(nq) - 1]) / 2
+        q75 = (y[int(3 * nq)] + y[int(3 * nq) - 1]) / 2
+    elif (remainder == 1):
+        q25 = (y[int(nq)] + y[int(nq) - 1]) / 2
+        q75 = (y[int(3 * nq)] + y[int(3 * nq + 1)]) / 2
+    elif (remainder == 2):
+        q25 = y[int(nq)]
+        q75 = y[int(3 * nq + 1)]
+    elif (remainder == 3):
+        q25 = y[int(nq)]
+        q75 = y[int(3 * nq + 2)]
+
+    #find inner quartile range and bounds of valid endpoints
+    iqr = q75 - q25
+    xmin = q25 - 1.5 * iqr
+    xmax = q75 + 1.5 * iqr
+    return [xmin, xmax]
+
+def outlier_test(x):
+    #flags outlier endpoints
+    #x is an n x 2 vector of right and left interval endpoints
+    #calculate box and whisker test on x[0] and x[1]
+    x = np.array(x)
+    x0 = box_and_whisker(x[:,0])
+    x1 = box_and_whisker(x[:,1])
+    y = []
+
+    #eliminate outlier endpoints in x using box and whisker test
+    for i in range(0, len(x)):
+        if (x0[0] <= x[i,0] <= x0[1] and x1[0] <= x[i,1] <= x1[1]):
+            y.append(x[i])
+    if len(y) == 0:
+        return None
+    
+    y = np.array(y)
+    #y has first pass outliers eliminated
+    #repeat box and whisker test on L=y[1]-y[0]
+    L = y[:,1] - y[:,0]
+    Lbw = box_and_whisker(L)
+    z = []
+    for i in range(0, len(y)):
+        if (Lbw[0] <= L[i] <= Lbw[1]):
+            z.append(y[i])
+    if len(z) == 0:
+        return None
+    return np.array(z)
+
+
+outlietest = [[0, 6],
+              [2, 4],
+              [3, 4],
+              [5, 6],
+              [4, 10],
+              [5, 5.5],
+              [5.2, 5.3]]
+
+print(outlier_test(outlietest))
+
+
+def fr(y, a):
+    #root function for Eq. A. 18 of reference [2]
+    r = y
+    z = root(scipy.stats.norm.cdf(y + r) - scipy.stats.norm.cdf(y - r) - (1 - a), r)
+    return z
