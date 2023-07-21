@@ -15,17 +15,28 @@ def trap(x, ht, lb, lt, rt, rb):
         tr = ht * (rb - x) / (rb - rt)
     return tr
 
+
 def bad_data(x, x0, x1):
     #eliminates invalid intervals
     y = None
-    a = x[0]
-    b = x[1]
     for i in range(0, len(x)):
-        #remove rows with infeasable endpoints
-        if ((x < a[i] < b[i] < x1) and (b[i] - a[i] < x1 - x0)):
+        a, b = x[i]
+        #remove rows with infeasible endpoints
+        if ((x0 < a < b < x1) and (b - a < x1 - x0)):
             if y is None:
-                y = [a[i], b[i]]
+                y = [[a, b]]
             else:
-                y = np.vstack((y, [a[i], b[i]]))
+                y.append([a, b])
     return y
+
+data = [[0, 10],
+        [-1, 10],
+        [0, 11],
+        [5, 4],
+        [1, 9],
+        [3, 3],
+        [50, 10]]
+
+
+print(bad_data(data, 0, 10))
 
