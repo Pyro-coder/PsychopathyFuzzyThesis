@@ -157,4 +157,17 @@ def kk(a, y, n):
     func = lambda xk: fk(xk, a, n) - (1 - y)
     return root(func, xk).x[0]
 
-print(kk(0.05,0.05,30))
+#print(kk(0.05,0.05,30))
+
+def tolerance (x, m, sigma, k):
+    #flags valuews of x where either endpoint is outside the tolerance limits
+    upperlim = m + k * sigma
+    lowerlim = m - k * sigma
+    for i in range(0, len(x)):
+        if lowerlim <= x[i] <= upperlim:
+            continue
+        else:
+            x[i] = "Out of tolerance"
+    return x
+
+    
