@@ -3,6 +3,7 @@ import scipy
 import math
 
 from scipy.optimize import root
+from scipy.stats import chi2
 
 import openpyxl
 
@@ -133,28 +134,27 @@ outlietest = [[0, 6],
 
 
 def fr(y, a):
-    #root function for Eq. A. 18 of reference [2]
+    # root function for Eq. A. 18 of reference [2]
     r = y
-    func = lambda r: scipy.stats.norm.cdf(y + r) - scipy.stats.norm.cdf(y - r) - (1 - a)
-    z = root(func, r)
+    def f(x):
+        return scipy.stats.norm.cdf(y + r) - scipy.stats.norm.cdf(y - r) - (1 - a)
+    z = root(f, r)
     return z.x[0]
-
-
-def integrand(y, xk, a, n):
-    return 1 - (scipy.stats.chi2.cdf((n - 1 * fr(y, a) ** 2) / xk * xk, n - 1)) * np.exp(((-1) / 2) * n * y * y)
 
 def fk(xk, a, n):
     # Q(lambda, k) Eq. A. 17 of reference [2]
-    integral, error = scipy.integrate.quad(integrand, 0, np.inf, args=(xk, a, n))
-    output = (2 * np.sqrt(2)) / np.sqrt(2 * math.pi) * integral
-    return output
+    integrand = lambda y: 1 - chi2.cdf(((n - 1) * fr(y, a)**2) / xk**2, n - 1) * np.exp(((-1) / 2) * n * y * y)
+    print("About to integrate integrand = ", integrand)
+    output, _ = scipy.integrate.quad(integrand, 0, np.inf)
+    print("integration output = ", output)
+    return (2 * np.sqrt(n)) / (np.sqrt(2 * np.pi)) * output
 
 def kk(a, upsilon, n):
     # solve for k of Eq. A. 14 of reference [2]
     xk = 2
-    func = lambda xk: fk(xk, a, n) - (1 - upsilon)
-    z = scipy.optimize.root(func, xk)
-    return z
+    def f(xk):
+        return fk(xk, a, n) - (1 - upsilon)
+    z = root(f, xk)
+    return z.x[0]
 
-
-print (kk(0.05, 0.05, 30))
+print(kk(0.05, 0.05, 30))
