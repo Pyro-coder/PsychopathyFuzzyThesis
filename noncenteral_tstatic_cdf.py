@@ -1,6 +1,8 @@
 import numpy as np
 import scipy
+import math
 
+from statistics import mean
 from scipy.integrate import quad
 from scipy.optimize import root
 from scipy.stats import chi2, norm
@@ -170,4 +172,42 @@ def tolerance (x, m, sigma, k):
             x[i] = "Out of tolerance"
     return x
 
-    
+def reasonable (x, ml, mr, sigma_l, sigma_r):
+    #eliminate unreasonable intervals that do not overlap all other intervals or have too little overlap
+    #x is an n x 2 vector of intervals
+    #ml, mr, sigma_l, sigma_r are means and standard deviations
+    #If sigma_l or sigma_r is zero, all intervals overlap by definition
+    if sigma_l == 0 or sigma_r == 0:
+        return x
+    #If sigma)l == sigma_r, the solution to Eq. (A-6) in Ref. [1] is the mean of the means
+    if sigma_l == 0 or sigma_r == 0:
+        return x
+    if sigma_l == sigma_r:
+        zeta = (ml + mr) / 2
+    else:
+        zeta_1 = ((mr * sigma_l ** 2 - ml * sigma_r ** 2) - sigma_l * sigma_r * np.sqrt((ml - mr) ** 2 + 2 * (sigma_l ** 2 - sigma_r ** 2) * math.log(sigma_l / sigma_r))) / (sigma_l**2 - sigma_r**2)
+        zeta_2 = ((mr * sigma_l ** 2 - ml * sigma_r ** 2) + sigma_l * sigma_r * np.sqrt((ml - mr) ** 2 + 2 * (sigma_l ** 2 - sigma_r ** 2) * math.log(sigma_l / sigma_r))) / (sigma_l**2 - sigma_r**2)
+
+        if ml <= zeta_1 <= mr:
+            zeta = zeta_1
+        elif ml <= zeta_2 <= mr:
+            zeta = zeta_2
+        else:
+            zeta = zeta_1 if abs(ml - zeta_1) < abs(mr - zeta_2) else zeta_2
+
+    y = []
+    for interval in x:
+        if (2 * ml - zeta <= interval[0] < zeta < interval[1] <= 2 * mr - zeta):
+            y.append(interval)
+    return y
+
+
+test = [[5, 6], [3, 4], [4, 7], [4, 6], [4, 7], [4, 5], [4.2, 5.3]]
+
+ml = mean([item[0] for item in test])
+mr = mean([item[1] for item in test])
+
+sigma_l = np.std([item[0] for item in test])
+sigma_r = np.std([item[1] for item in test])
+
+print(reasonable(test, ml, mr, sigma_l, sigma_r))
