@@ -1,5 +1,6 @@
 import numpy as np
 import scipy
+import math
 
 from scipy.optimize import root
 
@@ -134,5 +135,26 @@ print(outlier_test(outlietest))
 def fr(y, a):
     #root function for Eq. A. 18 of reference [2]
     r = y
-    z = root(scipy.stats.norm.cdf(y + r) - scipy.stats.norm.cdf(y - r) - (1 - a), r)
+    func = lambda r: scipy.stats.norm.cdf(y + r) - scipy.stats.norm.cdf(y - r) - (1 - a)
+    z = root(func, r)
+    return z.x[0]
+
+
+def integrand(y, xk, a, n):
+    return 1 - (scipy.stats.chi2.cdf((n - 1 * fr(y, a) ** 2) / xk * xk, n - 1)) * np.exp(((-1) / 2) * n * y * y)
+
+def fk(xk, a, n):
+    # Q(lambda, k) Eq. A. 17 of reference [2]
+    integral, error = scipy.integrate.quad(integrand, 0, np.inf, args=(xk, a, n))
+    output = (2 * np.sqrt(2)) / np.sqrt(2 * math.pi) * integral
+    return output
+
+def kk(a, upsilon, n):
+    # solve for k of Eq. A. 14 of reference [2]
+    xk = 2
+    func = lambda xk: fk(xk, a, n) - (1 - upsilon)
+    z = scipy.optimize.root(func, xk)
     return z
+
+
+print (kk(0.05, 0.05, 30))
