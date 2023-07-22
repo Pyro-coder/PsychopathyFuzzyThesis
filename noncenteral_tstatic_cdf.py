@@ -135,28 +135,24 @@ outlietest = [[0, 6],
 
 
 def fr(y, a):
-    # root function for Eq. A. 18 of reference [2]
-    r = y
+    func = lambda r: norm.cdf(y + r) - norm.cdf(y - r) - a
+    r = root(func, 0).x[0]
+    return r
 
-    def f(x):
-        return norm.cdf(y + r) - norm.cdf(y - r) - (1 - a)
 
-    z = root(f, r)
-    return z.x[0]
+def integrand(y, xk, a, n):
+    term1 = 1 - chi2.cdf((n - 1) * (fr(y, a) ** 2) / (xk ** 2), df=n)
+    term2 = np.exp(-(n / 2) * (y ** 2))
+    return term1 * term2
 
 def fk(xk, a, n):
-    # Q(lambda, k) Eq. A. 17 of reference [2]
-    def integrand(y):
-        return 1 - chi2.cdf(((n - 1) * fr(y, a) ** 2) / xk ** 2, n - 1) * np.exp(((-1) / 2) * n * y * y)
+    result, _ = quad(integrand, 0, np.inf, args=(xk, a, n))
+    return 2 / (np.sqrt(2 * np.pi) * np.sqrt(n)) * result
 
-    output = quad(integrand, 0, np.inf)[0]
-    return (2 * np.sqrt(n)) / (np.sqrt(2 * np.pi)) * output
 
-def kk(a, upsilon, n):
-    # solve for k of Eq. A. 14 of reference [2]
-    xk = 2
-
-    z = root(lambda x: fk(x, a, n) - (1 - upsilon), xk)
-    return z.x[0]
+def kk(a, γ, n):
+    func = lambda xk: fk(xk, a, n) - γ
+    xk = root(func, 2).x[0]
+    return xk
 
 print(kk(0.05, 0.05, 30))
