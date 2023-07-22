@@ -152,9 +152,9 @@ def fk(xk, a, n):
     return result
 
 
-def kk(a, γ, n):
-    func = lambda xk: fk(xk, a, n) - γ
-    xk = root(func, 2).x[0]
-    return xk
+def kk(a, y, n):
+    xk = 2
+    func = lambda xk: fk(xk, a, n) - (1 - y)
+    return root(func, xk).x[0]
 
-print(fk(2.4,0.01,30))
+print(kk(0.05,0.05,30))
