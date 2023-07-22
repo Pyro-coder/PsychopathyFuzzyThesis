@@ -140,14 +140,16 @@ def fr(y, a):
     return root(func, r).x[0]
 
 
-def integrand(y, xk, a, n):
-    term1 = 1 - chi2.cdf((n - 1) * (fr(y, a) ** 2) / (xk ** 2), df=n)
-    term2 = np.exp(-(n / 2) * (y ** 2))
-    return term1 * term2
-
 def fk(xk, a, n):
-    result, _ = quad(integrand, 0, np.inf, args=(xk, a, n))
-    return 2 / (np.sqrt(2 * np.pi) * np.sqrt(n)) * result
+    def integrand(y):
+        term1 = ((n - 1) * fr(y, a)**2) / (xk**2)
+        term2 = n - 1
+        pchisq = 1 - chi2.cdf(term1, term2)
+        term3 = (-1/2) * n * y**2
+        return ((2*np.sqrt(n)) / (np.sqrt(2 * np.pi))) * pchisq * np.exp(term3)
+
+    result, error = quad(integrand, 0, np.inf)
+    return result
 
 
 def kk(a, γ, n):
@@ -155,4 +157,4 @@ def kk(a, γ, n):
     xk = root(func, 2).x[0]
     return xk
 
-print(kk(0.05, 0.05, 30))
+print(fk(2.4,0.01,30))
