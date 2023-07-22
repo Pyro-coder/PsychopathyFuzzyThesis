@@ -135,9 +135,9 @@ outlietest = [[0, 6],
 
 
 def fr(y, a):
-    func = lambda r: norm.cdf(y + r) - norm.cdf(y - r) - a
-    r = root(func, 0).x[0]
-    return r
+    r = y
+    func = lambda r: norm.cdf(y + r) - norm.cdf(y - r) - (1 - a)
+    return root(func, r).x[0]
 
 
 def integrand(y, xk, a, n):
