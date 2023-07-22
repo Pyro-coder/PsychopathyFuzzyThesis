@@ -129,7 +129,7 @@ outlietest = [[0, 6],
               [5, 5.5],
               [5.2, 5.3]]
 
-print(outlier_test(outlietest))
+#print(outlier_test(outlietest))
 
 
 def fr(y, a):
