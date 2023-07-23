@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import statistics
 import openpyxl
 from scipy.integrate import quad
 from scipy.optimize import root
@@ -29,7 +30,7 @@ def bad_data(x, x0, x1):
     for i in range(0, len(x)):
         a, b = x[i]
         # remove rows with infeasible endpoints
-        if ((x0 < a < b < x1) and (b - a < x1 - x0)):
+        if ((x0 <= a < b <= x1) and (b - a < x1 - x0)):
             if y is None:
                 y = [[a, b]]
             else:
@@ -37,15 +38,9 @@ def bad_data(x, x0, x1):
     return y
 
 
-data = [[0, 10],
-        [-1, 10],
-        [0, 11],
-        [5, 4],
-        [1, 9],
-        [3, 3],
-        [50, 10]]
+# data = [[0, 10], [-1, 10], [0, 11], [5, 4], [1, 9], [0, 8], [3, 3], [50, 10]]
 
-print(bad_data(data, 0, 10))
+# print(bad_data(data, 0, 10))
 
 web_data_copy = openpyxl.load_workbook('excel\WEBdatacopy.xlsx')
 
@@ -169,7 +164,7 @@ def tolerance(x, m, sigma, k):
         if lowerlim <= x[i] <= upperlim:
             continue
         else:
-            x[i] = "Out of tolerance"
+            x[i] = -1000
     return x
 
 
@@ -181,8 +176,6 @@ def reasonable(x, ml, mr, sigma_l, sigma_r):
     if sigma_l == 0 or sigma_r == 0:
         return x
     # If sigma)l == sigma_r, the solution to Eq. (A-6) in Ref. [1] is the mean of the means
-    if sigma_l == 0 or sigma_r == 0:
-        return x
     if sigma_l == sigma_r:
         zeta = (ml + mr) / 2
     else:
@@ -195,23 +188,34 @@ def reasonable(x, ml, mr, sigma_l, sigma_r):
 
         if ml <= zeta_1 <= mr:
             zeta = zeta_1
-        elif ml <= zeta_2 <= mr:
-            zeta = zeta_2
         else:
-            zeta = zeta_1 if abs(ml - zeta_1) < abs(mr - zeta_2) else zeta_2
+            zeta = zeta_2
 
     y = []
-    for interval in x:
-        if (2 * ml - zeta <= interval[0] < zeta < interval[1] <= 2 * mr - zeta):
-            y.append(interval)
+
+    for i in range(0, len(x)):
+        if (2 * ml - zeta <= x[i][0] < zeta < x[i][1] <= round(4 * mr - zeta)/2):
+            y.append(x[i])
     return y
 
 # test = [[5, 6], [3, 4], [4, 7], [4, 6], [4, 7], [4, 5], [4.2, 5.3]]
 
-# ml = mean([item[0] for item in test])
-# mr = mean([item[1] for item in test])
+# ml = statistics.mean([item[0] for item in test])
+# mr = statistics.mean([item[1] for item in test])
 
 # sigma_l = np.std([item[0] for item in test])
 # sigma_r = np.std([item[1] for item in test])
 
 # print(reasonable(test, ml, mr, sigma_l, sigma_r))
+
+
+#test = [[-1000.0, 2.5], [3.0, 3.5], [0.8, 1.5], [1.0, 3.5], [4.0, 8.0], [0.0, 3.0], [0.5, 1.5], [0.0, 2.5], [0.0, 1.0], [1.0, 2.1], [1.0, 2.5], [0.0, 3.0], [0.0, 1.0], [1.0, 3.0], [0.0, 2.0], [0.3, 2.0], [1.0, 3.0], [0.0, 1.0], [3.0, 7.0], [0.0, 2.0], [0.0, 1.0], [0.0, 2.0], [0.0, 2.0], [0.0, 1.5], [0.0, 3.0], [1.0, 3.0], [0.0, 0.5], [0.0, 2.0], [0.0, 2.0], [0.0, 3.0], [0.0, 2.5], [0.25, 2.0], [8.0, 9.6], [0.0, 1.0], [1.5, 3.0], [0.0, 2.0], [0.0, 2.0], [0.2, 2.0], [0.0, 1.0], [0.0, 1.0]]
+
+#ml = 0.3208333333333333
+#mr = 2.0444444444444443
+
+#sigma_l = 0.5171200967323204
+#sigma_r = 0.7671898375979573
+
+#print(reasonable(test, ml, mr, sigma_l, sigma_r))
+
