@@ -194,7 +194,7 @@ def reasonable(x, ml, mr, sigma_l, sigma_r):
     y = []
 
     for i in range(0, len(x)):
-        if (2 * ml - zeta <= x[i][0] < zeta < x[i][1] <= round(4 * mr - zeta)/2):
+        if (2 * ml - zeta <= x[i][0] < zeta < x[i][1] <= round(32 * mr - zeta)/16):
             y.append(x[i])
     return y
 
