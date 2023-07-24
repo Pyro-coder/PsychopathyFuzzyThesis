@@ -89,18 +89,44 @@ def dataclean(x, x0, x1, a, significance_level):
 
 
 ws = openpyxl.load_workbook('excel\Very Bad interval data.xlsx')["Sheet1"]
-xVeryBad = []
+x_very_bad = []
 for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
-    xVeryBad.append([float(cell) for cell in row if cell is not None])
+    x_very_bad.append([float(cell) for cell in row if cell is not None])
+
+ws = openpyxl.load_workbook('excel\Bad interval data.xlsx')['Sheet1']
+x_bad = []
+for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+    x_bad.append([float(cell) for cell in row if cell is not None])
+
+ws = openpyxl.load_workbook('excel\Somewhat Bad interval data.xlsx')['Sheet1']
+x_somewhat_bad = []
+for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+    x_somewhat_bad.append([float(cell) for cell in row if cell is not None])
+
+ws = openpyxl.load_workbook('excel\Fair interval data.xlsx')['Sheet1']
+x_fair = []
+for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+    x_fair.append([float(cell) for cell in row if cell is not None])
+
+ws = openpyxl.load_workbook('excel\Somewhat Good interval data.xlsx')['Sheet1']
+x_somewhat_good = []
+for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+    x_somewhat_good.append([float(cell) for cell in row if cell is not None])
+
+ws = openpyxl.load_workbook('excel\Good interval data.xlsx')['Sheet1']
+x_good = []
+for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+    x_good.append([float(cell) for cell in row if cell is not None])
+
+ws = openpyxl.load_workbook('excel\Very Good interval data.xlsx')['Sheet1']
+x_very_good = []
+for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+    x_very_good.append([float(cell) for cell in row if cell is not None])
 
 
-yVB = dataclean(xVeryBad, 0, 10, 0.05, 0.05)[0]
+# used for debugging
+# yVB = dataclean(x_very_good, 0, 10, 0.05, 0.05)[0]
 
-print(yVB)
+# print(yVB)
 
-xBad = openpyxl.load_workbook('excel\Bad interval data.xlsx')['Sheet1']
-xSomewhatBad = openpyxl.load_workbook('excel\Somewhat Bad interval data.xlsx')['Sheet1']
-xFair = openpyxl.load_workbook('excel\Fair interval data.xlsx')['Sheet1']
-xSomewhatGood = openpyxl.load_workbook('excel\Somewhat Good interval data.xlsx')['Sheet1']
-xGood = openpyxl.load_workbook('excel\Good interval data.xlsx')['Sheet1']
-xVeryGood = openpyxl.load_workbook('excel\Very Good interval data.xlsx')['Sheet1']
+
