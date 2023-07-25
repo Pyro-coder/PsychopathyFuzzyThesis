@@ -45,7 +45,7 @@ def nct_cdf(t, n, delta, tol):
 
 
 
-print(nct_cdf(2, 100, 2, 0.00001))
+# print(nct_cdf(2, 100, 2, 0.00001))
 
 
 def inv_nct_cdf(P, n, delta, tol):
@@ -74,7 +74,7 @@ def inv_nct_cdf(P, n, delta, tol):
     return opt.brentq(f, x0, x1)
 
 
-print(inv_nct_cdf(.95, 50, 2, 0.000001))
+# print(inv_nct_cdf(.95, 50, 2, 0.000001))
     
 import math
 
@@ -85,4 +85,4 @@ def ktol(upsilon, a, n, tol):
     result = inv_nct_cdf(1 - a, n - 1, delta, tol) / math.sqrt(n)
     return result
 
-print (ktol(.05, .05, 175, 0.000001))
+# print (ktol(.05, .05, 175, 0.000001))
