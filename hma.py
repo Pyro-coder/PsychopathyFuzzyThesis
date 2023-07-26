@@ -3,7 +3,7 @@ import openpyxl
 import numpy as np
 import nct_cdf
 import dataclean
-
+import statistics
 
 def hma_fou_class0(x, x0, x1):
     # Step 1 of HMA: determine the FOU class for naturally bounded (class 0) sets
@@ -108,7 +108,7 @@ def hma_olap_remove(x, c):
 # Gr = hma_olap_remove(dataclean.yG, "Interior FOU")
 # print(Gr)
 
-VGr = hma_olap_remove(dataclean.yVG, "Right shoulder FOU")
+# VGr = hma_olap_remove(dataclean.yVG, "Right shoulder FOU")
 # print(VGr)
 
 def aleft(xr, x0):
@@ -118,42 +118,47 @@ def aleft(xr, x0):
     # x0 is the left bound
     # oleft is the left bound of the overlap interval of the original interval set
     # Thus, oleft will be the max right bound of the reduced intervals xr
+    xr = np.array(xr)
     oleft = max(xr[:, 0])
     intlengths = np.abs(xr[:, 0] - oleft)
     # mLH is the mean of interval lengths wrt the left bound of the overlap interval (oleft)
     mLH = oleft - np.mean(intlengths)
-    sLH = np.std(intlengths)
-    aleft = max(x0, oleft - 3 * np.sqrt(2) * sLH)
-    aright = min(oleft, 6 * mLH + 3 * np.sqrt(2) * sLH - 5 * oleft)
+    sLH = statistics.stdev(intlengths)
+    a_left = max(x0, oleft - 3 * np.sqrt(2) * sLH)
+    a_right = min(oleft, 6 * mLH + 3 * np.sqrt(2) * sLH - 5 * oleft)
     # Now test to if the order is sensible, and if not, reverse them
-    if aleft <= aright:
-        out = [aleft, aright]
+    if a_left <= a_right:
+        out = [a_left, a_right]
     else:
-        out = [max(x0, aright), min(oleft, aleft)]
+        out = [max(x0, a_right), min(oleft, a_left)]
     # out_0/out_1 are the UMF/LMF intersections with the x-axis, respectively
     return out
 
-def aright(xr, xl):
+def aright(xr, x1):
     # Calculate a parameters for right-hand side of Interior or Left shoulder FOU
     # See eq. (6) in HMA paper
     # xr is the set of reduced intervals for the right-hand side from the hmaolapremove function
     # x1 is the right bound
     # oright is the right bound of the overlap interval of the original interval set
     # Thus, oright will be the min left bound of the reduced intervals xr
+    xr = np.array(xr)
     oright = min(xr[:, 1])
     intlengths = np.abs(xr[:, 1] - oright)
     #mRH is the mean of interval length wrt the right bound of the overlap interval (oright)
     mRH = oright + np.mean(intlengths)
-    sRH = np.std(intlengths)
-    bright = min(xl, oright + 3 * np.sqrt(2) * sRH)
-    bleft = max(oright, 6 * mRH - 3 * np.sqrt(2) * sRH - 5 * xl)
+    sRH = statistics.stdev(intlengths)
+    b_right = min(x1, oright + 3 * np.sqrt(2) * sRH)
+    b_left = max(oright, 6 * mRH - 3 * np.sqrt(2) * sRH - 5 * oright)
     # Now test to if the order is sensible, and if not, reverse them
-    if bleft <= bright:
-        out = [bleft, bright]
+    if b_left <= b_right:
+        out = [b_left, b_right]
     else:
-        out = [max(oright, bright), min(xl, bleft)]
+        out = [max(oright, b_right), min(x1, b_left)]
     # out_0/out_1 are the UMF/LMF intersections with the x-axis, respectively
     return out
 
 # Debugging tests for aleft and aright
-print(aleft(VGr, 0))
+# print(aleft(VGr, 0))
+# print(aleft(SGr[0], 0))
+# print(aright(VBr, 10))
+# print(aright(SGr[1], 10))
