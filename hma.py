@@ -10,9 +10,9 @@ def hma_fou_class0(x, x0, x1):
     # x is an n x 2 array of intervals that survived the dataclean process
     # [x0, x1] is the bound interval
     ml = np.mean(x[:, 0])
-    sigma_l = np.std(x[:, 0])
+    sigma_l = statistics.stdev(x[:, 0])
     mr = np.mean(x[:, 1])
-    sigma_r = np.std(x[:, 1])
+    sigma_r = statistics.stdev(x[:, 1])
     k = nct_cdf.ktol(0.05, 0.05, len(x), 10 ** -5)
     al = ml - k * sigma_l
     bu = mr + k * sigma_r
@@ -31,7 +31,7 @@ def hma_fou_class1(x, x0):
     # x is an n x 2 array of intervals that survived the dataclean processing
     # x0 is the left bound (typically 0) for the intervals
     ml = np.mean(x[:, 0])
-    sigma_l = np.std(x[:, 0])
+    sigma_l = statistics.stdev(x[:, 0])
     k = nct_cdf.ktol(0.05, 0.05, len(x), 10 ** -5)
     al = ml - k * sigma_l
     if al <= x0:
@@ -162,3 +162,47 @@ def aright(xr, x1):
 # print(aleft(SGr[0], 0))
 # print(aright(VBr, 10))
 # print(aright(SGr[1], 10))
+
+def hma_map(x, c, x0, x1):
+    """Implement the mapping of fuzzy part step 4
+    x is the set of reduced intervals from the hmaolapremove function"""
+    if c == "Interior FOU":
+        out = [aleft(x[0], x0), aright(x[1], x1)]
+    elif c == "Left shoulder FOU":
+        out = [aright(x, x1)]
+    elif c == "Right shoulder FOU":
+        out = [aleft(x, x0)]
+        # out will be a single 2-vector for left or right-shoulder FOU, a nested 2-vector of 2-vectors for interior FOUs
+    return out
+
+# Debugging tests for hma_map
+# print(hma_map(Br, "Interior FOU", 0, 10)[1])
+
+def hma_trap(x, x0, x1):
+    #Go from an array of intervals x to the UMF/LMF trapezoidal parameters
+    c = hma_fou_class0(x, x0, x1)
+    # compute overlap interval
+    olap_interval = hma_overlap(x, c, x0, x1)
+    # compute reduced intervals with overlap removed
+    x_reduced = hma_olap_remove(x, c)
+    # compute the trapezoidal parameters
+    tp = hma_map(x_reduced, c, x0, x1)
+    # calculate trapezoid parameters for different FOUs
+    if c == "Interior FOU":
+        # tp is a nested 2-vector of 2-vectors for left/right UMF/LMF x-axis intercepts
+        out_UMF = [tp[0][0], olap_interval[0], olap_interval[1], tp[1][1]]
+        out_LMF = [tp[0][1], olap_interval[0], olap_interval[1], tp[1][0]] 
+    elif c == "Left shoulder FOU":
+        # tp is a 2-vector of UMF/LMF x-axis intercepts
+        out_UMF = [x0, x0, olap_interval[1], tp[0][1]]
+        out_LMF = [x0, x0, olap_interval[1], tp[0][0]]
+    elif c == "Right shoulder FOU":
+        # tp is a 2-vector of UMF/LMF x-axis intercepts
+        out_UMF = [tp[0][0], olap_interval[0], x1, x1]
+        out_LMF = [tp[0][1], olap_interval[0], x1, x1]
+    return [out_UMF, out_LMF]
+
+
+G = hma_trap(dataclean.yG, 0, 10)
+print(G[0])
+print(G[1])

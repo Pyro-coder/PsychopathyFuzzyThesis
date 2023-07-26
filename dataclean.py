@@ -2,6 +2,7 @@ from statistics import mean
 
 import numpy as np
 import openpyxl
+import statistics
 
 from noncenteral_tstatic_cdf import bad_data, outlier_test, kk, tolerance, reasonable
 
@@ -23,9 +24,9 @@ def eliminate_outliers(y):
 def calculate_mean_std(z):
     # Calculate mean and standard deviation
     mean_left = np.mean(z[:, 0])
-    std_left = np.std(z[:, 0])
+    std_left = statistics.stdev(z[:, 0])
     mean_right = np.mean(z[:, 1])
-    std_right = np.std(z[:, 1])
+    std_right = statistics.stdev(z[:, 1])
     return mean_left, std_left, mean_right, std_right
 
 
