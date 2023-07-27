@@ -42,7 +42,7 @@ def bad_data(x, x0, x1):
 
 # print(bad_data(data, 0, 10))
 
-web_data_copy = openpyxl.load_workbook('excel\WEBdatacopy.xlsx')
+web_data_copy = openpyxl.load_workbook('excel/WEBdatacopy.xlsx')
 
 wdc_sheet = web_data_copy['data']
 
@@ -196,7 +196,7 @@ def reasonable(x, ml, mr, sigma_l, sigma_r):
     for i in range(0, len(x)):
 
         # maybe the one line I am not proud of, because of how python handles floating point numbers, it is necessary to round the final value
-        if (2 * ml - zeta <= x[i][0] < zeta < x[i][1] <= round (2 * mr - zeta)):
+        if (2 * ml - zeta <= x[i][0] < zeta < x[i][1] <= round ((2 * mr - zeta)*8)/8):
             y.append(x[i])
     return y
 

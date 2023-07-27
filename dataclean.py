@@ -15,8 +15,10 @@ def eliminate_bad_data(x, x0, x1):
     return y, None
 
 def eliminate_outliers(y):
+    print(y)
     # Stage 2 -- Outlier elimination
     z = outlier_test(y)
+    print(z)
     if z is None:
         return None, "All intervals eliminated at outlier elimination stage"
     return z, None
@@ -32,7 +34,7 @@ def calculate_mean_std(z):
 
 def tolerance_limit_processing(z, mean_left, std_left, mean_right, std_right, a, significance_level):
     # Stage 3 -- Tolerance limit processing
-    tolerance_factor = kk(a, significance_level, len(z))
+    tolerance_factor = kk(a, significance_level, len(z) + 1)
     y0 = tolerance(z[:, 0], mean_left, std_left, tolerance_factor)
     y1 = tolerance(z[:, 1], mean_right, std_right, tolerance_factor)
     z = []
@@ -59,10 +61,9 @@ def reasonable_interval_processing(z, mean_left, std_left, mean_right, std_right
 
 def dataclean(x, x0, x1, a, significance_level):
     # Preprocess raw interval data for a given word to eliminate unacceptable intervals using all of the above tests
-
-    y, message = eliminate_bad_data(x, x0, x1)
-    if message:
-        return message
+    y = bad_data(x, x0, x1)
+    if y is None:
+        return "All intervals eliminated at bad data stage"
 
     z, message = eliminate_outliers(y)
     if message:
@@ -78,58 +79,59 @@ def dataclean(x, x0, x1, a, significance_level):
     if message:
         return message
 
+    out = [[], [], []]
+    out[0] = z
     # Compute sample means of residual interval endpoints
-    if z is not None:
-        z_array = np.array(z)
-        return [z, np.mean(z_array[:, 0]), np.mean(z_array[:, 1])]
-    else:
-        return [None, None, None]
+    out[1] = np.mean(z[:, 0])
+    out[2] = np.mean(z[:, 1])
+    return out
 
 
 
 
 
-ws = openpyxl.load_workbook('excel\Very Bad interval data.xlsx')["Sheet1"]
+ws = openpyxl.load_workbook('excel/Very Bad interval data.xlsx')["Sheet1"]
 x_very_bad = []
 for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
     x_very_bad.append([float(cell) for cell in row if cell is not None])
 
-ws = openpyxl.load_workbook('excel\Bad interval data.xlsx')['Sheet1']
+ws = openpyxl.load_workbook('excel/Bad interval data.xlsx')['Sheet1']
 x_bad = []
 for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
     x_bad.append([float(cell) for cell in row if cell is not None])
 
-ws = openpyxl.load_workbook('excel\Somewhat Bad interval data.xlsx')['Sheet1']
+ws = openpyxl.load_workbook('excel/Somewhat Bad interval data.xlsx')['Sheet1']
 x_somewhat_bad = []
 for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
     x_somewhat_bad.append([float(cell) for cell in row if cell is not None])
 
-ws = openpyxl.load_workbook('excel\Fair interval data.xlsx')['Sheet1']
+ws = openpyxl.load_workbook('excel/Fair interval data.xlsx')['Sheet1']
 x_fair = []
 for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
     x_fair.append([float(cell) for cell in row if cell is not None])
 
-ws = openpyxl.load_workbook('excel\Somewhat Good interval data.xlsx')['Sheet1']
+ws = openpyxl.load_workbook('excel/Somewhat Good interval data.xlsx')['Sheet1']
 x_somewhat_good = []
 for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
     x_somewhat_good.append([float(cell) for cell in row if cell is not None])
 
-ws = openpyxl.load_workbook('excel\Good interval data.xlsx')['Sheet1']
+ws = openpyxl.load_workbook('excel/Good interval data.xlsx')['Sheet1']
 x_good = []
 for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
     x_good.append([float(cell) for cell in row if cell is not None])
 
-ws = openpyxl.load_workbook('excel\Very Good interval data.xlsx')['Sheet1']
+ws = openpyxl.load_workbook('excel/Very Good interval data.xlsx')['Sheet1']
 x_very_good = []
 for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
     x_very_good.append([float(cell) for cell in row if cell is not None])
 
 
 
-yVB = dataclean(x_very_bad, 0, 10, 0.05, 0.05)[0]
-yB = dataclean(x_bad, 0, 10, 0.05, 0.05)[0]
-ySB = dataclean(x_somewhat_bad, 0, 10, 0.05, 0.05)[0]
-yF = dataclean(x_fair, 0, 10, 0.05, 0.05)[0]
-ySG = dataclean(x_somewhat_good, 0, 10, 0.05, 0.05)[0]
+#yVB = dataclean(x_very_bad, 0, 10, 0.05, 0.05)[0]
+#yB = dataclean(x_bad, 0, 10, 0.05, 0.05)[0]
+#ySB = dataclean(x_somewhat_bad, 0, 10, 0.05, 0.05)[0]
+#yF = dataclean(x_fair, 0, 10, 0.05, 0.05)[0]
+#ySG = dataclean(x_somewhat_good, 0, 10, 0.05, 0.05)[0]
 yG = dataclean(x_good, 0, 10, 0.05, 0.05)[0]
-yVG = dataclean(x_very_good, 0, 10, 0.05, 0.05)[0]
+print(yG)
+#yVG = dataclean(x_very_good, 0, 10, 0.05, 0.05)[0]
