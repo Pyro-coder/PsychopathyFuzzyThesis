@@ -27,14 +27,16 @@ def trap(x, ht, lb, lt, rt, rb):
 def bad_data(x, x0, x1):
     # eliminates invalid intervals
     y = None
+    x = np.array(x)
+    a = x[:, 0]
+    b = x[:, 1]
     for i in range(0, len(x)):
-        a, b = x[i]
         # remove rows with infeasible endpoints
-        if ((x0 <= a < b <= x1) and (b - a < x1 - x0)):
+        if ((x0 <= a[i] < b[i] <= x1) and (b[i] - a[i] < x1 - x0)):
             if y is None:
-                y = [[a, b]]
+                y = [[a[i], b[i]]]
             else:
-                y.append([a, b])
+                y.append([a[i], b[i]])
     return y
 
 
