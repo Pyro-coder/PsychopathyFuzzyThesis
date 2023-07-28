@@ -15,10 +15,8 @@ def eliminate_bad_data(x, x0, x1):
     return y, None
 
 def eliminate_outliers(y):
-    print(y)
     # Stage 2 -- Outlier elimination
     z = outlier_test(y)
-    print(z)
     if z is None:
         return None, "All intervals eliminated at outlier elimination stage"
     return z, None
