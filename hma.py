@@ -203,6 +203,6 @@ def hma_trap(x, x0, x1):
     return [out_UMF, out_LMF]
 
 
-G = hma_trap(dataclean.yG, 0, 10)
-print(G[0])
-print(G[1])
+# G = hma_trap(dataclean.yVG, 0, 10)
+# print(G[0])
+# print(G[1])
