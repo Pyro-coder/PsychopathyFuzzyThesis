@@ -206,3 +206,7 @@ def hma_trap(x, x0, x1):
 # G = hma_trap(dataclean.yVG, 0, 10)
 # print(G[0])
 # print(G[1])
+
+def trap_z(x, h):
+    """Trapzoidal function with h parameters"""
+    return [noncenteral_tstatic_cdf.trapz(x, 1, h[0][0], h[1][0], h[2][0], h[3][0]), noncenteral_tstatic_cdf.trapz(x, 1, h[0][1], h[1][1], h[2][1], h[3][1])]
