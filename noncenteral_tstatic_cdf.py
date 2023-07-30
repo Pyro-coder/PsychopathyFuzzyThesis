@@ -8,6 +8,12 @@ from scipy.optimize import root
 from scipy.stats import chi2, norm
 
 
+def round_above_threshold(n):
+    if n - int(n) >= 0.98: 
+        return round(n)
+    else: 
+        return n
+
 def trap(x, ht, lb, lt, rt, rb):
     # trapezoid of height ht, left base lb, left top lt, right top rt, right base rb
     global tr
@@ -162,7 +168,7 @@ def tolerance(x, m, sigma, k):
     # flags valuews of x where either endpoint is outside the tolerance limits
     upperlim = m + k * sigma
     lowerlim = m - k * sigma
-    for i in range(0, len(x)):
+    for i in range(len(x)):
         if lowerlim <= x[i] <= upperlim:
             continue
         else:
@@ -195,10 +201,10 @@ def reasonable(x, ml, mr, sigma_l, sigma_r):
 
     y = []
 
-    for i in range(0, len(x)):
+    for i in range(len(x)):
 
         # maybe the one line I am not proud of, because of how python handles floating point numbers, it is necessary to round the final value
-        if (2 * ml - zeta <= x[i][0] < zeta < x[i][1] <= round ((2 * mr - zeta)*8)/8):
+        if (2 * ml - zeta <= x[i][0] < zeta < x[i][1] <= round_above_threshold(2 * mr - zeta)):
             y.append(x[i])
     return y
 

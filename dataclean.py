@@ -131,5 +131,4 @@ ySB = dataclean(x_somewhat_bad, 0, 10, 0.05, 0.05)[0]
 yF = dataclean(x_fair, 0, 10, 0.05, 0.05)[0]
 ySG = dataclean(x_somewhat_good, 0, 10, 0.05, 0.05)[0]
 yG = dataclean(x_good, 0, 10, 0.05, 0.05)[0]
-print(yG)
 yVG = dataclean(x_very_good, 0, 10, 0.05, 0.05)[0]
