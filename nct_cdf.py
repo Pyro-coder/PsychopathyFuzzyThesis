@@ -1,5 +1,6 @@
 import numpy as np
 import scipy
+import math
 from scipy.stats import nct
 import scipy.optimize as opt
 import scipy.stats as stats
@@ -76,7 +77,7 @@ def inv_nct_cdf(P, n, delta, tol):
 
 # print(inv_nct_cdf(.95, 50, 2, 0.000001))
     
-import math
+
 
 def ktol(upsilon, a, n, tol):
     #Find one-sided tolerance interval k (multiple of sample std dev away from sample mean), given γ, α and n

@@ -50,11 +50,11 @@ def bad_data(x, x0, x1):
 
 # print(bad_data(data, 0, 10))
 
-web_data_copy = openpyxl.load_workbook('excel/WEBdatacopy.xlsx')
+# web_data_copy = openpyxl.load_workbook('excel/WEBdatacopy.xlsx')
 
-wdc_sheet = web_data_copy['data']
+# wdc_sheet = web_data_copy['data']
 
-range_values = wdc_sheet['AI2:AJ175']
+# range_values = wdc_sheet['AI2:AJ175']
 
 
 # for row in range_values:

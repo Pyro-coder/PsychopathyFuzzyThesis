@@ -27,4 +27,4 @@ def kk(a, γ, n):
     xk = root(func, 2).x[0]
     return xk
 
-print(kk(0.05, 0.05, 30))
+# print(kk(0.05, 0.05, 30))
