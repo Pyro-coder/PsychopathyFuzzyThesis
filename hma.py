@@ -202,10 +202,9 @@ def hma_trap(x, x0, x1):
         out_LMF = [tp[0][1], olap_interval[0], x1, x1]
     return [out_UMF, out_LMF]
 
-
-# G = hma_trap(dataclean.yVG, 0, 10)
-# print(G[0])
-# print(G[1])
+G = hma_trap(dataclean.yVG, 0, 10)
+print(G[0])
+print(G[1])
 
 def trap_z(x, h):
     """Trapzoidal function with h parameters"""
