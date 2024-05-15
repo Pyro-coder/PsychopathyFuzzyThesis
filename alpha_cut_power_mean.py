@@ -6,6 +6,9 @@ from EKM import t2wpm
 from trapezoid import trap
 from fou_points import fouset
 from select_f import select_f
+from type_1_fuzzy_weighted_average import alpha_fwa
+from calculate_mf_from_alpha_cuts import mu_Sf
+from t2_centroid import t2_centroid
 
 def alpha_to_alpha_t2wpm(aux, alx, auw, alw, r):
     """
@@ -146,22 +149,64 @@ u = np.arange(0, 3.01, 0.01)
 
 jz0 = range(len(z0fou))
 jz1 = range(len(z1fou))
-print(z0fou)
 
-# Skip the first element ('FOU Points') and only take the tuples
-z0fou_coords = z0fou[1:]
-z1fou_coords = z1fou[1:]
+# # Skip the first element ('FOU Points') and only take the tuples
+# z0fou_coords = z0fou[1:]
+# z1fou_coords = z1fou[1:]
 
-x_coords_z0 = [coord[0] for coord in z0fou_coords]
-y_coords_z0 = [coord[1] for coord in z0fou_coords]
+# x_coords_z0 = [coord[0] for coord in z0fou_coords]
+# y_coords_z0 = [coord[1] for coord in z0fou_coords]
 
-x_coords_z1 = [coord[0] for coord in z1fou_coords]
-y_coords_z1 = [coord[1] for coord in z1fou_coords]
+# x_coords_z1 = [coord[0] for coord in z1fou_coords]
+# y_coords_z1 = [coord[1] for coord in z1fou_coords]
 
-plt.scatter(x_coords_z0, y_coords_z0, label='z0fou')
-plt.scatter(x_coords_z1, y_coords_z1, label='z1fou')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('Scatter Plot of z0fou and z1fou')
-plt.legend()
-plt.show()
+# plt.scatter(x_coords_z0, y_coords_z0, label='z0fou')
+# plt.scatter(x_coords_z1, y_coords_z1, label='z1fou')
+# plt.xlabel('x')
+# plt.ylabel('y')
+# plt.title('Scatter Plot of z0fou and z1fou')
+# plt.legend()
+# plt.show()
+
+
+
+
+# Construct the support intervals matrix for zu and wu
+xsup = np.array([
+    [zu0[1], zu0[4]],  # Extracting the second and fifth elements of the first trapezoidal function
+    [zu1[1], zu1[4]]   # Same extraction for the second function
+])
+
+wsup = np.array([
+    [wu0[1], wu0[4]],  # Similarly for wu
+    [wu1[1], wu1[4]]
+])
+
+# Call the αfwa function with the specified parameters
+Au = alpha_fwa(zu, wu, xsup, wsup, 100, 300)
+
+print("\n", Au)
+
+# # Construct the support intervals matrix for zl and wl
+# xsup = np.array([
+#     [zl0[1], zl0[4]],  # Extracting specific elements for zl
+#     [zl1[1], zl1[4]]
+# ])
+
+# wsup = np.array([
+#     [wl0[1], wl0[4]],  # Similarly for wl
+#     [wl1[1], wl1[4]]
+# ])
+
+# # Call the αfwa function to compute the alpha cuts for the LMF
+# Al = alpha_fwa(zl, wl, xsup, wsup, 100, 300)
+
+# def lwa_umf(x):
+#     mu_Sf(x, Au)
+# def lwa_lmf(x):
+#     mu_Sf(x, Al)
+
+# lwa_fou = fouset(lwa_umf, lwa_lmf, 0, 10, .05, 0.012)
+
+# c = t2_centroid(Au, Al, 300)
+# print(c)
