@@ -1,57 +1,70 @@
 import numpy as np
-from scipy.optimize import brentq
+#THIS FUNCTION HAS CAUSED ERRORS IN THE PAST, PROCEED WITH CAUTION, REMEMBER WHERE IT IS USED IF YOU NEED TO FIX ERRORS. (I THINK I FIXED MOST OF IT)
+
+
+def root(func, xmin, xmax):
+    # A simple root-finding method, for example, bisection method
+    from scipy.optimize import bisect
+    return bisect(func, xmin, xmax)
 
 def alpha_cut(mu, xmin, xmax, m, n):
-    # Calculate the increment for the x values
-    x_incr = (xmax - xmin) / n
+    """
+    Compute alpha-cut intervals of fuzzy membership function mu.
+    mu is a fuzzy membership function.
+    [xmin, xmax] is the support interval of mu.
+    m+1 is the number of alpha-cut intervals; n is the number of steps in x to discretize the MF.
+    """
+    xincr = (xmax - xmin) / n
     maxy = 0
     maxxleft = xmin
     maxxright = xmin
-
-    # Initialize the array for alpha-cuts
-    alphacuts = np.zeros((m + 1, 3))  # Each row: [alpha_left, alpha_right, alpha]
-
-    # First, find the maximum value of the membership function to set the range
+    
+    # Find the x-interval of the mu function maximum, to bound the alpha-cut endpoints
     for i in range(n + 1):
-        x = xmin + i * x_incr
+        x = xmin + i * xincr
         mu_x = mu(x)
         if mu_x > maxy:
+            maxxleft = x
+            maxxright = x
             maxy = mu_x
-            maxxleft = maxxright = x
         elif mu_x == maxy:
             maxxright = x
-
-    # Zero alpha cut interval
-    alphacuts[0, :] = [xmin, xmax, 0]
-
-    # Find non-zero alpha cut intervals
+        elif mu_x < maxy:
+            maxxright = x - xincr
+            break
+    
+    alphacut = np.zeros((m + 1, 3))
+    alphacut[0, 0] = xmin
+    alphacut[0, 1] = xmax
+    alphacut[0, 2] = 0
+    
+    # Find the non-zero alpha cut intervals
     for i in range(1, m + 1):
         alpha = i / m
-        alphacuts[i, 2] = alpha  # Store alpha value
-
-        if alpha > maxy:
-            break  # No alpha-cuts above the maximum of the membership function
-
-        # Define the function for finding roots
-        def root_func(x):
-            return mu(x) - alpha
-
-        # Calculate left and right alpha-cuts
         if alpha < maxy:
-            try:
-                # Left alpha cut
-                if mu(xmin) >= alpha:
-                    alphacuts[i, 0] = xmin
+            if (xmin == maxxleft) or (abs(mu(xmin) - alpha) < 0.0001) or (mu(xmin) >= alpha):
+                alphacut[i, 0] = xmin
+            else:
+                if abs(mu(maxxleft) - alpha) < 0.0001:
+                    alphacut[i, 0] = maxxleft
                 else:
-                    alphacuts[i, 0] = brentq(root_func, xmin, maxxleft)
-
-                # Right alpha cut
-                if mu(xmax) >= alpha:
-                    alphacuts[i, 1] = xmax
+                    alphacut[i, 0] = root(lambda x: mu(x) - alpha, xmin, maxxleft)
+            
+            if (xmax == maxxright) or (abs(mu(xmax) - alpha) < 0.0001) or (mu(xmax) >= alpha):
+                alphacut[i, 1] = xmax
+            else:
+                if abs(mu(maxxright) - alpha) < 0.0001:
+                    alphacut[i, 1] = maxxright
                 else:
-                    alphacuts[i, 1] = brentq(root_func, maxxright, xmax)
-            except ValueError:
-                # Handle cases where no root is found within the interval
-                pass
-
-    return alphacuts
+                    alphacut[i, 1] = root(lambda x: mu(x) - alpha, maxxright, xmax)
+        
+        if alpha == maxy:
+            alphacut[i, 0] = maxxleft
+            alphacut[i, 1] = maxxright
+        
+        if alpha > maxy:
+            break
+        
+        alphacut[i, 2] = alpha
+    
+    return alphacut
