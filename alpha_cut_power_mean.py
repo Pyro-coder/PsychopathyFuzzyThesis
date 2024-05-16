@@ -185,28 +185,19 @@ wsup = np.array([
 # Call the αfwa function with the specified parameters
 Au = alpha_fwa(zu, wu, xsup, wsup, 100, 300)
 
-print("\n", Au)
 
-# # Construct the support intervals matrix for zl and wl
-# xsup = np.array([
-#     [zl0[1], zl0[4]],  # Extracting specific elements for zl
-#     [zl1[1], zl1[4]]
-# ])
+# Construct the support intervals matrix for zl and wl
+xsup = np.array([
+    [zl0[1], zl0[4]],  # Extracting specific elements for zl
+    [zl1[1], zl1[4]]
+])
 
-# wsup = np.array([
-#     [wl0[1], wl0[4]],  # Similarly for wl
-#     [wl1[1], wl1[4]]
-# ])
+wsup = np.array([
+    [wl0[1], wl0[4]],  # Similarly for wl
+    [wl1[1], wl1[4]]
+])
 
-# # Call the αfwa function to compute the alpha cuts for the LMF
-# Al = alpha_fwa(zl, wl, xsup, wsup, 100, 300)
+# Call the αfwa function to compute the alpha cuts for the LMF
+Al = alpha_fwa(zl, wl, xsup, wsup, 100, 300)
 
-# def lwa_umf(x):
-#     mu_Sf(x, Au)
-# def lwa_lmf(x):
-#     mu_Sf(x, Al)
-
-# lwa_fou = fouset(lwa_umf, lwa_lmf, 0, 10, .05, 0.012)
-
-# c = t2_centroid(Au, Al, 300)
-# print(c)
+print(Al)

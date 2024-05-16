@@ -1,11 +1,6 @@
 import numpy as np
+from scipy.optimize import bisect
 #THIS FUNCTION HAS CAUSED ERRORS IN THE PAST, PROCEED WITH CAUTION, REMEMBER WHERE IT IS USED IF YOU NEED TO FIX ERRORS. (I THINK I FIXED MOST OF IT)
-
-
-def root(func, xmin, xmax):
-    # A simple root-finding method, for example, bisection method
-    from scipy.optimize import bisect
-    return bisect(func, xmin, xmax)
 
 def alpha_cut(mu, xmin, xmax, m, n):
     """
@@ -48,7 +43,7 @@ def alpha_cut(mu, xmin, xmax, m, n):
                 if abs(mu(maxxleft) - alpha) < 0.0001:
                     alphacut[i, 0] = maxxleft
                 else:
-                    alphacut[i, 0] = root(lambda x: mu(x) - alpha, xmin, maxxleft)
+                    alphacut[i, 0] = bisect(lambda x: mu(x) - alpha, xmin, maxxleft)
             
             if (xmax == maxxright) or (abs(mu(xmax) - alpha) < 0.0001) or (mu(xmax) >= alpha):
                 alphacut[i, 1] = xmax
@@ -56,7 +51,7 @@ def alpha_cut(mu, xmin, xmax, m, n):
                 if abs(mu(maxxright) - alpha) < 0.0001:
                     alphacut[i, 1] = maxxright
                 else:
-                    alphacut[i, 1] = root(lambda x: mu(x) - alpha, maxxright, xmax)
+                    alphacut[i, 1] = bisect(lambda x: mu(x) - alpha, maxxright, xmax)
         
         if alpha == maxy:
             alphacut[i, 0] = maxxleft
