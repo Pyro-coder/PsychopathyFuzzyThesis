@@ -35,5 +35,5 @@ def t2_centroid(au, al, n):
     
     # Compute centroid interval using KM
     centr = kmalg(xx, w)
-    out = np.array([centr[0, 0], centr[0, 1]])
+    out = np.array([centr[0], centr[1]])
     return out

@@ -21,22 +21,40 @@ def lmf(x, ml, mr, sigma, ks):
 
 
 def fouset(umf, lmf, xmin, xmax, xinc, yinc):
-    S = [("FOU Points",)]  # to store points
+    """
+    Create a set S of points (x, y) belonging to the FOU bounded by lmf(x) and umf(x).
+    
+    Parameters:
+    umf (function): Upper membership function
+    lmf (function): Lower membership function
+    xmin (float): Minimum value of x
+    xmax (float): Maximum value of x
+    xinc (float): Increment for x values
+    yinc (float): Increment for y values
+
+    Returns:
+    list: A list of tuples representing points (x, y) in the FOU
+    """
+    S = []  # Initialize the set of points
+    i = 1   # Counter for the points
+
     x = xmin
     while x <= xmax:
         upper = umf(x)
         lower = lmf(x)
-        y = lower  # start from the lower value
-        while y <= upper:
+        y = yinc
+        while y <= 1:
             if lower < y < upper:
                 S.append((x, y))
-            y += yinc
+                i += 1
+            y += 2 * yinc
         x += xinc
+
     return S
 
 
 def alpha_fouset(au, al, xinc, yinc):
-    S = [("FOU Points",)]
+    S = []
     i = 1
     j = 0
     while j < min(len(al), len(au)):

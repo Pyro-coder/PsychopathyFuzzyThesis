@@ -197,14 +197,14 @@ wsup = np.array([
 # Call the αfwa function to compute the alpha cuts for the LMF
 Al = alpha_fwa(zl, wl, xsup, wsup, 100, 300)
 
-Al = Al[:60]  
-#TODO TOMORROW, figure out why the output of alpha_fwa is 60 for al and 100 for au
 
 def lwa_UMF(x):
     mu_Sf(x, Au)
 
+
 def lwa_LMF(x):
     mu_Sf(x, Al)
 
-c = t2_centroid(Au, Al, 300)
-print(c)
+lwa_FOU = fouset(lwa_UMF, lwa_LMF, 0, 10, 0.05, 0.012)
+
+print(lwa_FOU)
