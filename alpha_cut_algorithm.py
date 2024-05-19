@@ -1,6 +1,9 @@
 import numpy as np
 from scipy.optimize import bisect
-#THIS FUNCTION HAS CAUSED ERRORS IN THE PAST, PROCEED WITH CAUTION, REMEMBER WHERE IT IS USED IF YOU NEED TO FIX ERRORS. (I THINK I FIXED MOST OF IT)
+
+
+# THIS FUNCTION HAS CAUSED ERRORS IN THE PAST, PROCEED WITH CAUTION, REMEMBER WHERE IT IS USED IF YOU NEED TO FIX
+# ERRORS. (I THINK I FIXED MOST OF IT)
 
 def alpha_cut(mu, xmin, xmax, m, n):
     """
@@ -13,7 +16,7 @@ def alpha_cut(mu, xmin, xmax, m, n):
     maxy = 0
     maxxleft = xmin
     maxxright = xmin
-    
+
     # Find the x-interval of the mu function maximum, to bound the alpha-cut endpoints
     for i in range(n + 1):
         x = xmin + i * xincr
@@ -27,12 +30,12 @@ def alpha_cut(mu, xmin, xmax, m, n):
         elif mu_x < maxy:
             maxxright = x - xincr
             break
-    
+
     alphacut = np.zeros((m + 1, 3))
     alphacut[0, 0] = xmin
     alphacut[0, 1] = xmax
     alphacut[0, 2] = 0
-    
+
     # Find the non-zero alpha cut intervals
     for i in range(1, m + 1):
         alpha = i / m
@@ -44,7 +47,7 @@ def alpha_cut(mu, xmin, xmax, m, n):
                     alphacut[i, 0] = maxxleft
                 else:
                     alphacut[i, 0] = bisect(lambda x: mu(x) - alpha, xmin, maxxleft)
-            
+
             if (xmax == maxxright) or (abs(mu(xmax) - alpha) < 0.0001) or (mu(xmax) >= alpha):
                 alphacut[i, 1] = xmax
             else:
@@ -52,14 +55,14 @@ def alpha_cut(mu, xmin, xmax, m, n):
                     alphacut[i, 1] = maxxright
                 else:
                     alphacut[i, 1] = bisect(lambda x: mu(x) - alpha, maxxright, xmax)
-        
+
         if alpha == maxy:
             alphacut[i, 0] = maxxleft
             alphacut[i, 1] = maxxright
-        
+
         if alpha > maxy:
             break
-        
+
         alphacut[i, 2] = alpha
-    
+
     return alphacut
