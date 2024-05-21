@@ -3,7 +3,7 @@ from scipy.optimize import bisect
 
 
 # THIS FUNCTION HAS CAUSED ERRORS IN THE PAST, PROCEED WITH CAUTION, REMEMBER WHERE IT IS USED IF YOU NEED TO FIX
-# ERRORS. (I THINK I FIXED MOST OF IT)
+# ERRORS. (I THINK I FIXED MOST OF IT) IF THERE ARE ERRORS, THEY ARE PROBABLY IN THIS FUNCTION.
 
 def alpha_cut(mu, xmin, xmax, m, n):
     """
@@ -65,4 +65,7 @@ def alpha_cut(mu, xmin, xmax, m, n):
 
         alphacut[i, 2] = alpha
 
+
+    # Remove extra rows of zeros before returning
+    alphacut = alphacut[~np.all(alphacut == 0, axis=1)]
     return alphacut

@@ -9,6 +9,7 @@ from select_f import select_f
 from type_1_fuzzy_weighted_average import alpha_fwa
 from calculate_mf_from_alpha_cuts import mu_Sf
 from t2_centroid import t2_centroid, defuzz
+from alpha_cuts_UMF_LMF import alpha_t2
 
 
 def alpha_to_alpha_t2wpm(aux, alx, auw, alw, r):
@@ -209,11 +210,6 @@ wsup = np.array([
 # Call the αfwa function to compute the alpha cuts for the LMF
 Al = alpha_fwa(zl, wl, xsup, wsup, 100, 300)
 
-Al = Al[:61]
-
-
-# TODO TOMORROW, figure out why the output of alpha_fwa is not 61 for al
-
 def lwa_umf(x):
     return mu_Sf(x, Au)
 
@@ -231,6 +227,8 @@ cl = c[0]
 cr = c[1]
 
 m = defuzz(c)
+
+
 # print(m)
 
 
@@ -257,6 +255,7 @@ def t2wpmtroid(Au, Al, N, r):
     out = np.array([centr[0], centr[1]])
 
     return out
+
 
 # # 1. Create a range of x values
 # x_values = np.arange(0, 10, 0.01)
@@ -290,6 +289,24 @@ def t2wpmtroid(Au, Al, N, r):
 # # 8. Display the plot
 # plt.show()
 
-print(Al)
-print(t2wpmtroid(Au, Al, 1000, 0))
+# print(t2wpmtroid(Au, Al, 1000, 0))
 
+def fz0(x):
+    return np.array([[z0u(x)], [z0l(x)]])
+
+def fw0(x):
+    return np.array([[w0u(x)], [w0l(x)]])
+
+def fz1(x):
+    return np.array([[z1u(x)], [z1l(x)]])
+
+def fw1(x):
+    return np.array([[w1u(x)], [w1l(x)]])
+
+
+
+
+Az0 = alpha_t2(fz0, 300, 0, 4, 100, 300)
+
+
+print(Az0)
