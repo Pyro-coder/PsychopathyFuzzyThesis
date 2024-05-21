@@ -23,44 +23,59 @@ def hinv(z, r):
 
 def wpmekml(x, w, r):
     """
-    EKM algorithm for weighted power mean with r finite; left endpoint.
+    EKM algorithm for weighted power mean with r finite; left endpoint
     x is an array of interval endpoints for x(i):  [xmin(i),xmax(i)]
     w is an array of interval endpoints for w(i):  [wmin(i),wmax(i)]
     """
-    N = len(x)
+    N = x.shape[0]
+
+    # If r is negative, check for zero elements in x
     if r < 0:
-        for xi in x[:, 0]:  # Assume x is a 2D array with interval endpoints
-            if xi == 0:
+        for i in range(x.shape[0]):
+            if x[i, 0] == 0:
                 return 0
 
-    # Sorting based on the first column of x combined with w
-    aug = np.column_stack((x[:, 0], w))
-    aug = aug[aug[:, 0].argsort()]  # Sorting by the first column
-    xminsort, u, v = aug[:, 0], aug[:, 1], aug[:, 2]
+    # Augment and sort
+    aug = np.c_[x[:, 0], w]
+    aug = aug[aug[:, 0].argsort()]
 
-    k = int(round(N / 2.4)) - 1
-    a = sum(hinv(xminsort[i], r) * v[i] for i in range(k + 1)) + \
-        sum(hinv(xminsort[i], r) * u[i] for i in range(k + 1, N))
-    b = sum(v[:k + 1]) + sum(u[k + 1:])
+    xminsort = aug[:, 0]
+    u = aug[:, 1]
+    v = aug[:, 2]
+
+    # Initialize k (the switching point)
+    k = round(N / 2.4) - 1
+
+    a = np.sum([hinv(xminsort[i], r) * v[i] for i in range(k + 1)]) + np.sum(
+        [hinv(xminsort[i], r) * u[i] for i in range(k + 1, N)])
+    b = np.sum(v[:k + 1]) + np.sum(u[k + 1:])
     y = a / b
     yL = h(y, r)
     kL = k
 
-    for kprime in range(N // 2):
+    for kprime in range(N - 1):
         if xminsort[kprime] <= h(y, r) <= xminsort[kprime + 1]:
             break
 
-    if xminsort[0] == xminsort[-1]:
+    if xminsort[0] == xminsort[N - 1]:
         return xminsort[0]
 
     while kprime != k:
         s = np.sign(kprime - k)
-        aprime = a + s * sum(hinv(xminsort[i], r) * (v[i] - u[i]) for i in range(min(k, kprime) + 1, max(k, kprime) + 1))
-        bprime = b + s * sum(v[i] - u[i] for i in range(min(k, kprime) + 1, max(k, kprime) + 1))
-        yprime = aprime / bprime
-        y, a, b, k, yL, kL = yprime, aprime, bprime, kprime, h(yprime, r), kprime
 
-        for kprime in range(N // 2):
+        aprime = a + s * np.sum(
+            [hinv(xminsort[i], r) * (v[i] - u[i]) for i in range(min(k, kprime) + 1, max(k, kprime) + 1)])
+        bprime = b + s * np.sum([v[i] - u[i] for i in range(min(k, kprime) + 1, max(k, kprime) + 1)])
+
+        yprime = aprime / bprime
+        y = yprime
+        a = aprime
+        b = bprime
+        k = kprime
+        yL = h(y, r)
+        kL = k
+
+        for kprime in range(N - 1):
             if xminsort[kprime] <= h(y, r) <= xminsort[kprime + 1]:
                 break
 
@@ -69,38 +84,53 @@ def wpmekml(x, w, r):
 
 def wpmekmr(x, w, r):
     """
-    EKM algorithm for weighted power mean with r finite; right endpoint.
+    EKM algorithm for weighted power mean with r finite; right endpoint
     x is an array of interval endpoints for x(i):  [xmin(i),xmax(i)]
     w is an array of interval endpoints for w(i):  [wmin(i),wmax(i)]
     """
-    N = len(x)
-    aug = np.column_stack((x[:, 1], w))
-    aug = aug[aug[:, 0].argsort()]  # Sorting by the first column
-    xmaxsort, v, u = aug[:, 0], aug[:, 1], aug[:, 2]
+    N = x.shape[0]
 
-    k = int(round(N / 1.7)) - 1
-    a = sum(hinv(xmaxsort[i], r) * v[i] for i in range(k + 1)) + \
-        sum(hinv(xmaxsort[i], r) * u[i] for i in range(k + 1, N))
-    b = sum(v[:k + 1]) + sum(u[k + 1:])
+    # Augment and sort
+    aug = np.c_[x[:, 1], w]
+    aug = aug[aug[:, 0].argsort()]
+
+    xmaxsort = aug[:, 0]
+    v = aug[:, 1]
+    u = aug[:, 2]
+
+    # Initialize k (the switching point)
+    k = round(N / 1.7) - 1
+
+    a = np.sum([hinv(xmaxsort[i], r) * v[i] for i in range(k + 1)]) + np.sum(
+        [hinv(xmaxsort[i], r) * u[i] for i in range(k + 1, N)])
+    b = np.sum(v[:k + 1]) + np.sum(u[k + 1:])
     y = a / b
     yR = h(y, r)
     kR = k
 
-    for kprime in range(N // 2):
+    for kprime in range(N - 1):
         if xmaxsort[kprime] <= h(y, r) <= xmaxsort[kprime + 1]:
             break
 
-    if xmaxsort[0] == xmaxsort[-1]:
+    if xmaxsort[0] == xmaxsort[N - 1]:
         return xmaxsort[0]
 
     while kprime != k:
         s = np.sign(kprime - k)
-        aprime = a + s * sum(hinv(xmaxsort[i], r) * (v[i] - u[i]) for i in range(min(k, kprime) + 1, max(k, kprime) + 1))
-        bprime = b + s * sum(v[i] - u[i] for i in range(min(k, kprime) + 1, max(k, kprime) + 1))
-        yprime = aprime / bprime
-        y, a, b, k, yR, kR = yprime, aprime, bprime, kprime, h(yprime, r), kprime
 
-        for kprime in range(N // 2):
+        aprime = a + s * np.sum(
+            [hinv(xmaxsort[i], r) * (v[i] - u[i]) for i in range(min(k, kprime) + 1, max(k, kprime) + 1)])
+        bprime = b + s * np.sum([v[i] - u[i] for i in range(min(k, kprime) + 1, max(k, kprime) + 1)])
+
+        yprime = aprime / bprime
+        y = yprime
+        a = aprime
+        b = bprime
+        k = kprime
+        yR = h(y, r)
+        kR = k
+
+        for kprime in range(N - 1):
             if xmaxsort[kprime] <= h(y, r) <= xmaxsort[kprime + 1]:
                 break
 

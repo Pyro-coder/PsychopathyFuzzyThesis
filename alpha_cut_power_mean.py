@@ -290,6 +290,6 @@ def t2wpmtroid(Au, Al, N, r):
 # # 8. Display the plot
 # plt.show()
 
-
-print(t2wpmtroid(Au, Al, 1000, -10))
+print(Al)
+print(t2wpmtroid(Au, Al, 1000, 0))
 
