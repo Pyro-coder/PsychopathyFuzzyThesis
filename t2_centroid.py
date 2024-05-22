@@ -1,7 +1,7 @@
 import numpy as np
 
 from EKM_algorithm import kmalg
-from calculate_mf_from_alpha_cuts import mu_Sf
+from calculate_mf_from_alpha_cuts import mu_sf
 
 
 def t2_centroid(au, al, n):
@@ -26,8 +26,8 @@ def t2_centroid(au, al, n):
     # Generate lower and upper MF values for each x
     w = np.zeros((n + 1, 2))
     for i in range(n + 1):
-        w[i, 0] = mu_Sf(x[i], al)
-        w[i, 1] = mu_Sf(x[i], au)
+        w[i, 0] = mu_sf(x[i], al)
+        w[i, 1] = mu_sf(x[i], au)
 
     # We don't want the wc and wp intervals to be zero width, else we'd have a conventional centroid
     for i in range(n):

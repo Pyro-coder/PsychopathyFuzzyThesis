@@ -1,5 +1,5 @@
 from EKM_algorithm import kmalg
-from max_alpha_for_lmf import alpha_maxlmf
+from max_alpha_for_lmf import alpha_max_lmf
 
 import numpy as np
 
@@ -32,7 +32,7 @@ def alpha_to_alpha_t2wa(aux, alx, auw, alw):
             out[0] = np.vstack((out[0], zu))
 
     # Determine the minimum number of alpha-cuts using the provided helper function
-    hmin, _ = alpha_maxlmf(alx, alw)
+    hmin, _ = alpha_max_lmf(alx, alw)
     
     # Process each j-th alpha-cut for LMF up to hmin
     for j in range(hmin + 1):

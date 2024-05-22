@@ -1,69 +1,107 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from max_alpha_for_lmf import alpha_maxlmf
+from max_alpha_for_lmf import alpha_max_lmf
 from EKM import t2wpm
 from trapezoid import trap
 from fou_points import fouset
 from select_f import select_f
 from type_1_fuzzy_weighted_average import alpha_fwa
-from calculate_mf_from_alpha_cuts import mu_Sf
+from calculate_mf_from_alpha_cuts import mu_sf
 from t2_centroid import t2_centroid, defuzz
 from alpha_cuts_UMF_LMF import alpha_t2
 
 
 def alpha_to_alpha_t2wpm(aux, alx, auw, alw, r):
     """
-    Calculate α-cuts of Type-2 fuzzy weighted power mean given UMF/LMF α-cuts of inputs.
+    Calculate α-cuts of Type-2 fuzzy weighted average given UMF/LMF α-cuts of inputs.
 
     Parameters:
-    aux, alx, auw, alw - Nested n-vectors, each element containing an array of α-cuts.
-    r - Power parameter for the weighted power mean, which can be -∞, finite, or ∞.
+        aux (list of list of np.array): Nested n-vectors, each element containing an array of UMF α-cuts.
+        alx (list of list of np.array): Nested n-vectors, each element containing an array of LMF α-cuts.
+        auw (list of list of np.array): Nested n-vectors, each element containing an array of UMF weights.
+        alw (list of list of np.array): Nested n-vectors, each element containing an array of LMF weights.
+        r (float): Parameter for the weighted power mean.
 
     Returns:
-    A nested 2-vector, each element containing an array of corresponding α-cut intervals of the WPM UMF/LMF.
+        list: A nested 2-vector, each element containing an array of corresponding α-cut intervals of the WPM UMF/LMF, respectively.
     """
-    n = len(aux)  # Number of terms in the weighted power mean
-    m = len(aux[0])  # Number of α-cuts of UMF
-    out = [None, None]
+    n = len(aux)
+    m = len(aux[0])
 
-    # Process UMF
+    xuab = []
+    wucd = []
+
     for j in range(m):
-        xuab = [aux[i][j] for i in range(n)]
-        wucd = [auw[i][j] for i in range(n)]
-
-        # Compute WPM α-cut for each UMF α-cut using an appropriate algorithm
-        zu = t2wpm(xuab, wucd, r)  # Placeholder for the actual weighted power mean calculation
-        if j == 0:
-            out[0] = zu
-        else:
-            out[0] = np.vstack((out[0], zu))
-
-    # Determine the minimum index and alpha value from the LMF α-cut arrays
-    hmin, _ = alpha_maxlmf(alx, alw)
-
-    # Process LMF for finite r
-    if r != float('inf') and r != float('-inf'):
-        for j in range(hmin + 1):
-            xlab = [alx[i][j] for i in range(n)]
-            wlcd = [alw[i][j] for i in range(n)]
-            zl = t2wpm(xlab, wlcd, r)
-            if j == 0:
-                out[1] = zl
+        xuab_j = []
+        wucd_j = []
+        for i in range(n):
+            if i == 0:
+                xuab_j = aux[i][j]
+                wucd_j = auw[i][j]
             else:
-                out[1] = np.vstack((out[1], zl))
+                xuab_j = np.vstack((xuab_j, aux[i][j]))
+                wucd_j = np.vstack((wucd_j, auw[i][j]))
+        xuab.append(xuab_j)
+        wucd.append(wucd_j)
 
-    # Handle r as -∞ or ∞
-    elif r == float('-inf'):
-        # Min interval logic for LMF
-        xmin = [min(alx[i][j][0] for i in range(n)) for j in range(hmin + 1)]
-        xmax = [min(alx[i][j][1] for i in range(n)) for j in range(hmin + 1)]
-        out[1] = np.array([[xmin[j], xmax[j], j / m] for j in range(hmin + 1)])
-    elif r == float('inf'):
-        # Max interval logic for LMF
-        xmin = [max(alx[i][j][0] for i in range(n)) for j in range(hmin + 1)]
-        xmax = [max(alx[i][j][1] for i in range(n)) for j in range(hmin + 1)]
-        out[1] = np.array([[xmin[j], xmax[j], j / m] for j in range(hmin + 1)])
+    hmin = alpha_max_lmf(alx, alw)
+
+    xlab = []
+    wlcd = []
+
+    if r != -np.inf and r != np.inf:
+        for j in range(hmin[0] + 1):
+            xlab_j = []
+            wlcd_j = []
+            for i in range(n):
+                if i == 0:
+                    xlab_j = alx[i][j]
+                    wlcd_j = alw[i][j]
+                else:
+                    xlab_j = np.vstack((xlab_j, alx[i][j]))
+                    wlcd_j = np.vstack((wlcd_j, alw[i][j]))
+            xlab.append(xlab_j)
+            wlcd.append(wlcd_j)
+
+    elif r == -np.inf:
+        xminleft = [np.inf] * (hmin[0] + 1)
+        xminright = [np.inf] * (hmin[0] + 1)
+        for j in range(hmin[0] + 1):
+            for i in range(n):
+                if len(alx[i]) - 1 >= j:
+                    xminleft[j] = min(xminleft[j], alx[i][j][0])
+                    xminright[j] = min(xminright[j], alx[i][j][1])
+            xlab.append(np.array([[xminleft[j], xminright[j], j / (m - 1)]]))
+
+    elif r == np.inf:
+        xmaxleft = [-np.inf] * (hmin[0] + 1)
+        xmaxright = [-np.inf] * (hmin[0] + 1)
+        for j in range(hmin[0] + 1):
+            for i in range(n):
+                if len(alx[i]) - 1 >= j:
+                    xmaxleft[j] = max(xmaxleft[j], alx[i][j][0])
+                    xmaxright[j] = max(xmaxright[j], alx[i][j][1])
+            xlab.append(np.array([[xmaxleft[j], xmaxright[j], j / (m - 1)]]))
+
+    out = [[], []]
+
+    for j in range(m):
+        zu = t2wpm(xuab[j], wucd[j], r)
+        if j == 0:
+            out[0] = np.array([[zu[0], zu[1], xuab[j][0][2]]])
+        else:
+            out[0] = np.vstack((out[0], [zu[0], zu[1], xuab[j][0][2]]))
+
+    for j in range(hmin[0] + 1):
+        if r != -np.inf and r != np.inf:
+            zl = t2wpm(xlab[j], wlcd[j], r)
+        else:
+            zl = xlab[j]
+        if j == 0:
+            out[1] = np.array([[zl[0], zl[1], j / (m - 1)]])
+        else:
+            out[1] = np.vstack((out[1], [zl[0], zl[1], j / (m - 1)]))
 
     return out
 
@@ -210,12 +248,13 @@ wsup = np.array([
 # Call the αfwa function to compute the alpha cuts for the LMF
 Al = alpha_fwa(zl, wl, xsup, wsup, 100, 300)
 
+
 def lwa_umf(x):
-    return mu_Sf(x, Au)
+    return mu_sf(x, Au)
 
 
 def lwa_lmf(x):
-    return mu_Sf(x, Al)
+    return mu_sf(x, Al)
 
 
 c = t2_centroid(Au, Al, 300)
@@ -244,8 +283,8 @@ def t2wpmtroid(Au, Al, N, r):
     # Generate lower and upper MF values for each x
     w = np.zeros((N + 1, 2))
     for i in range(N + 1):
-        w[i, 0] = mu_Sf(x[i], Al)
-        w[i, 1] = mu_Sf(x[i], Au)
+        w[i, 0] = mu_sf(x[i], Al)
+        w[i, 1] = mu_sf(x[i], Au)
 
     # Ensure w intervals are not zero width
     w[w[:, 1] - w[:, 0] == 0, 1] += 0.001
@@ -294,19 +333,56 @@ def t2wpmtroid(Au, Al, N, r):
 def fz0(x):
     return np.array([[z0u(x)], [z0l(x)]])
 
+
 def fw0(x):
     return np.array([[w0u(x)], [w0l(x)]])
 
+
 def fz1(x):
     return np.array([[z1u(x)], [z1l(x)]])
+
 
 def fw1(x):
     return np.array([[w1u(x)], [w1l(x)]])
 
 
-
-
 Az0 = alpha_t2(fz0, 300, 0, 4, 100, 300)
+Aw0 = alpha_t2(fw0, 300, 0, 4, 100, 300)
+Az1 = alpha_t2(fz1, 300, 0, 4, 100, 300)
+Aw1 = alpha_t2(fw1, 300, 0, 4, 100, 300)
 
 
-print(Az0)
+def lwa_u(x):
+    return mu_sf(x, Au)
+
+
+def lwa_l(x):
+    return mu_sf(x, Al)
+
+
+lwa_FOU = fouset(lwa_u, lwa_l, 0, 10, 0.04, 0.012)
+
+c = t2_centroid(Au, Al, 300)
+cl = c[0]
+cr = c[1]
+m = defuzz(c)
+
+auz = [Az0[0], Az1[0]]
+alz = [Az0[1], Az1[1]]
+
+auw = [Aw0[0], Aw1[0]]
+alw = [Aw0[1], Aw1[1]]
+
+r = -10
+
+alpha_wpm = alpha_to_alpha_t2wpm(auz, alz, auw, alw, r)
+
+def wpm_u(x):
+    return mu_sf(x, alpha_wpm[0])
+
+def wpm_l(x):
+    return mu_sf(x, alpha_wpm[1])
+
+wpm_fou = fouset(wpm_u, wpm_l, 0, 10, 0.04, 0.013)
+
+print(wpm_fou)

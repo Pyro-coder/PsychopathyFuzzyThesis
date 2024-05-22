@@ -1,4 +1,4 @@
-from max_alpha_for_lmf import alpha_maxlmf
+from max_alpha_for_lmf import alpha_max_lmf
 from alpha_cut_algorithm import alpha_cut
 from EKM_algorithm import selectf, kmalg
 
@@ -19,7 +19,7 @@ def alpha_fwa(x, w, xsup, wsup, m, N):
         walpha.append(alpha_cut(fw, wsup[i, 0], wsup[i, 1], m, N))
 
     # Find the index of the maximum valid alpha, corresponding to the minimum height over all x and w MFs
-    hmin = alpha_maxlmf(xalpha, walpha)
+    hmin = alpha_max_lmf(xalpha, walpha)
     max_h = hmin[0]
 
     xab = [None] * (max_h + 1)

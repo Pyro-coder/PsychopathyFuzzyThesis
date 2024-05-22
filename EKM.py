@@ -27,6 +27,9 @@ def wpmekml(x, w, r):
     x is an array of interval endpoints for x(i):  [xmin(i),xmax(i)]
     w is an array of interval endpoints for w(i):  [wmin(i),wmax(i)]
     """
+    x = np.array(x)
+    w = np.array(w)
+
     N = x.shape[0]
 
     # If r is negative, check for zero elements in x
@@ -88,6 +91,9 @@ def wpmekmr(x, w, r):
     x is an array of interval endpoints for x(i):  [xmin(i),xmax(i)]
     w is an array of interval endpoints for w(i):  [wmin(i),wmax(i)]
     """
+    x = np.array(x)
+    w = np.array(w)
+
     N = x.shape[0]
 
     # Augment and sort

@@ -23,36 +23,42 @@ def lmf(x, ml, mr, sigma, ks):
 
 def fouset(umf, lmf, xmin, xmax, xinc, yinc):
     """
-    Create a set S of points (x, y) belonging to the FOU bounded by lmf(x) and umf(x).
+    Create a set S of points (x, f(x)) belonging to the FOU bounded by lmf(x) and umf(x)
 
-    Parameters:
-    umf (function): Upper membership function
-    lmf (function): Lower membership function
-    xmin (float): Minimum value of x
-    xmax (float): Maximum value of x
-    xinc (float): Increment for x values
-    yinc (float): Increment for y values
+    Args:
+    umf : function
+        Upper membership function
+    lmf : function
+        Lower membership function
+    xmin : float
+        Minimum x value
+    xmax : float
+        Maximum x value
+    xinc : float
+        Increment for x
+    yinc : float
+        Increment for y
 
     Returns:
-    np.ndarray: A numpy array of points (x, y) in the FOU
+    S : numpy array
+        Set of points (x, y) belonging to the FOU
     """
-    points = []  # Initialize the list to collect points
+    S = []
+    i = 1
 
-    x = xmin
-    while x <= xmax:
+    x_values = np.arange(xmin, xmax + xinc, xinc)
+    y_values = np.arange(yinc, 1 + 2 * yinc, yinc)
+
+    for x in x_values:
         upper = umf(x)
         lower = lmf(x)
-        y = yinc
-        while y <= 1:
+
+        for y in y_values:
             if lower < y < upper:
-                points.append((x, y))
-            y += 2 * yinc
-        x += xinc
+                S.append([x, y])
+                i += 1
 
-    # Convert the list of points to a numpy array
-    S = np.array(points)
-
-    return S
+    return np.array(S)
 
 
 def alpha_fouset(au, al, xinc, yinc):

@@ -1,6 +1,6 @@
 import numpy as np
 
-def alpha_maxlmf(ax, aw):
+def alpha_max_lmf(ax, aw):
     """
     Determines the minimum number of alpha-cuts across nested vectors for x and w,
     and returns the highest alpha value from the smallest set.
@@ -38,6 +38,6 @@ ax_example = [np.array([[0, 1, 0.1], [1, 2, 0.2], [2, 3, 0.3]]),
 aw_example = [np.array([[0, 1, 0.1], [1, 2, 0.2]])]
 
 # Call the function
-imax, amax = alpha_maxlmf(ax_example, aw_example)
+imax, amax = alpha_max_lmf(ax_example, aw_example)
 print("Index of the smallest number of alpha-cuts:", imax)
 print("Highest alpha value from the smallest set:", amax)
