@@ -260,7 +260,7 @@ def lwa_lmf(x):
 c = t2_centroid(Au, Al, 300)
 # print(c)
 
-lwa_FOU = fouset(lwa_umf, lwa_lmf, 0, 10, 0.05, 0.012)
+lwa_fou = fouset(lwa_umf, lwa_lmf, 0, 10, 0.05, 0.012)
 
 cl = c[0]
 cr = c[1]
@@ -360,7 +360,7 @@ def lwa_l(x):
     return mu_sf(x, Al)
 
 
-lwa_FOU = fouset(lwa_u, lwa_l, 0, 10, 0.04, 0.012)
+lwa_fou = fouset(lwa_u, lwa_l, 0, 10, 0.04, 0.012)
 
 c = t2_centroid(Au, Al, 300)
 cl = c[0]
@@ -385,4 +385,68 @@ def wpm_l(x):
 
 wpm_fou = fouset(wpm_u, wpm_l, 0, 10, 0.04, 0.013)
 
-print(wpm_fou)
+
+
+
+
+
+
+
+
+
+
+# # PLOTTING CODE HERE
+# x_values = np.arange(0, 10.01, 0.01)
+#
+# # Calculate the corresponding y values for lwa_umf and lwa_lmf
+# y_values_umf = [lwa_umf(x) for x in x_values]
+# y_values_lmf = [lwa_lmf(x) for x in x_values]
+#
+# # Create a high-quality plot
+# plt.figure(figsize=(12, 8), dpi=300)
+#
+# # Plot lwa_umf and lwa_lmf
+# plt.plot(x_values, y_values_umf, label='lwa_umf', color='red')
+# plt.plot(x_values, y_values_lmf, label='lwa_lmf', color='red')
+#
+# # Plot lwa_FOU
+# x_coords_fou_lwa = [coord[0] for coord in lwa_fou]
+# y_coords_fou_lwa = [coord[1] for coord in lwa_fou]
+# plt.scatter(x_coords_fou_lwa, y_coords_fou_lwa, c='red', s=1, label='lwa_fou')
+#
+# # Plot wpmU and wpmL
+# y_values_wpmU = [wpm_u(x) for x in x_values]
+# y_values_wpmL = [wpm_l(x) for x in x_values]
+# plt.plot(x_values, y_values_wpmU, label='wpm_u', color='blue')
+# plt.plot(x_values, y_values_wpmL, label='wpm_l', color='blue')
+#
+# # Plot wpm_FOU
+# x_coords_fou_wpm = [coord[0] for coord in wpm_fou]
+# y_coords_fou_wpm = [coord[1] for coord in wpm_fou]
+# plt.scatter(x_coords_fou_wpm, y_coords_fou_wpm, c='blue', s=1, label='wpm_fou')
+#
+# # Plot the centroids
+# plt.scatter(cl, 1, c='green', label='Centroid Left')
+# plt.scatter(cr, 1, c='green', label='Centroid Right')
+#
+# # Plot the defuzzified centroid
+# plt.scatter(m, 1, c='blue', label='Defuzzified Centroid')
+#
+# # Add labels, a legend, and a title
+# plt.xlabel('x')
+# plt.ylabel('Membership Degree')
+# plt.title('LWA and WPM Type-2 Fuzzy Sets')
+# plt.legend()
+#
+# # Display the plot
+# plt.show()
+
+print("-inf: ", t2wpmtroid(alpha_wpm[0], alpha_wpm[1], 1000, float('-inf')))
+print("-10: ", t2wpmtroid(alpha_wpm[0], alpha_wpm[1], 1000, -10))
+print("-1: ", t2wpmtroid(alpha_wpm[0], alpha_wpm[1], 1000, -1))
+print("0: ", t2wpmtroid(alpha_wpm[0], alpha_wpm[1], 1000, 0))
+print("1: ", t2wpmtroid(alpha_wpm[0], alpha_wpm[1], 1000, 1))
+print("0.5: ", t2wpmtroid(alpha_wpm[0], alpha_wpm[1], 1000, 0.5))
+print("2: ", t2wpmtroid(alpha_wpm[0], alpha_wpm[1], 1000, 2))
+print("10: ", t2wpmtroid(alpha_wpm[0], alpha_wpm[1], 1000, 10))
+print("inf: ", t2wpmtroid(alpha_wpm[0], alpha_wpm[1], 1000, float('inf')))
