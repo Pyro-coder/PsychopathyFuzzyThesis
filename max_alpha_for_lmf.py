@@ -38,6 +38,6 @@ ax_example = [np.array([[0, 1, 0.1], [1, 2, 0.2], [2, 3, 0.3]]),
 aw_example = [np.array([[0, 1, 0.1], [1, 2, 0.2]])]
 
 # Call the function
-imax, amax = alpha_max_lmf(ax_example, aw_example)
-print("Index of the smallest number of alpha-cuts:", imax)
-print("Highest alpha value from the smallest set:", amax)
+# imax, amax = alpha_max_lmf(ax_example, aw_example)
+# print("Index of the smallest number of alpha-cuts:", imax)
+# print("Highest alpha value from the smallest set:", amax)

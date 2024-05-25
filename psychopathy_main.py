@@ -6,6 +6,7 @@ import fou_points as fp
 import alpha_cut_power_mean as acpm
 
 import numpy as np
+import pandas as pd
 
 
 def very_bad_lower(x):
@@ -172,4 +173,13 @@ def alpha_antonym(a):
 
 alpha_7 = np.array([alpha_very_bad, alpha_bad, alpha_somewhat_bad, alpha_fair, alpha_somewhat_good, alpha_good,
                     alpha_very_good])
+
+file_path = "excel/PCLRWords.xlsx"
+sheet_name = "Words"
+words = pd.read_excel(file_path, sheet_name=sheet_name, usecols="A:H", skiprows=2, nrows=20, header=None)
+
+sheet_name = "Scores"
+score_sheet = pd.read_excel(file_path, sheet_name=sheet_name, usecols="A:C", nrows=21)
+
+
 

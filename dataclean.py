@@ -88,47 +88,47 @@ def dataclean(x, x0, x1, a, significance_level):
 
 
 
-ws = openpyxl.load_workbook('excel/Very Bad interval data.xlsx')["Sheet1"]
-x_very_bad = []
-for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
-    x_very_bad.append([float(cell) for cell in row if cell is not None])
-
-ws = openpyxl.load_workbook('excel/Bad interval data.xlsx')['Sheet1']
-x_bad = []
-for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
-    x_bad.append([float(cell) for cell in row if cell is not None])
-
-ws = openpyxl.load_workbook('excel/Somewhat Bad interval data.xlsx')['Sheet1']
-x_somewhat_bad = []
-for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
-    x_somewhat_bad.append([float(cell) for cell in row if cell is not None])
-
-ws = openpyxl.load_workbook('excel/Fair interval data.xlsx')['Sheet1']
-x_fair = []
-for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
-    x_fair.append([float(cell) for cell in row if cell is not None])
-
-ws = openpyxl.load_workbook('excel/Somewhat Good interval data.xlsx')['Sheet1']
-x_somewhat_good = []
-for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
-    x_somewhat_good.append([float(cell) for cell in row if cell is not None])
-
-ws = openpyxl.load_workbook('excel/Good interval data.xlsx')['Sheet1']
-x_good = []
-for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
-    x_good.append([float(cell) for cell in row if cell is not None])
-
-ws = openpyxl.load_workbook('excel/Very Good interval data.xlsx')['Sheet1']
-x_very_good = []
-for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
-    x_very_good.append([float(cell) for cell in row if cell is not None])
-
-
-
-yVB = dataclean(x_very_bad, 0, 10, 0.05, 0.05)[0]
-yB = dataclean(x_bad, 0, 10, 0.05, 0.05)[0]
-ySB = dataclean(x_somewhat_bad, 0, 10, 0.05, 0.05)[0]
-yF = dataclean(x_fair, 0, 10, 0.05, 0.05)[0]
-ySG = dataclean(x_somewhat_good, 0, 10, 0.05, 0.05)[0]
-yG = dataclean(x_good, 0, 10, 0.05, 0.05)[0]
-yVG = dataclean(x_very_good, 0, 10, 0.05, 0.05)[0]
+# ws = openpyxl.load_workbook('excel/depreciated/Very Bad interval data.xlsx')["Sheet1"]
+# x_very_bad = []
+# for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+#     x_very_bad.append([float(cell) for cell in row if cell is not None])
+#
+# ws = openpyxl.load_workbook('excel/depreciated/Bad interval data.xlsx')['Sheet1']
+# x_bad = []
+# for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+#     x_bad.append([float(cell) for cell in row if cell is not None])
+#
+# ws = openpyxl.load_workbook('excel/depreciated/Somewhat Bad interval data.xlsx')['Sheet1']
+# x_somewhat_bad = []
+# for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+#     x_somewhat_bad.append([float(cell) for cell in row if cell is not None])
+#
+# ws = openpyxl.load_workbook('excel/depreciated/Fair interval data.xlsx')['Sheet1']
+# x_fair = []
+# for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+#     x_fair.append([float(cell) for cell in row if cell is not None])
+#
+# ws = openpyxl.load_workbook('excel/depreciated/Somewhat Good interval data.xlsx')['Sheet1']
+# x_somewhat_good = []
+# for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+#     x_somewhat_good.append([float(cell) for cell in row if cell is not None])
+#
+# ws = openpyxl.load_workbook('excel/depreciated/Good interval data.xlsx')['Sheet1']
+# x_good = []
+# for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+#     x_good.append([float(cell) for cell in row if cell is not None])
+#
+# ws = openpyxl.load_workbook('excel/depreciated/Very Good interval data.xlsx')['Sheet1']
+# x_very_good = []
+# for row in ws.iter_rows(min_row=1, max_row=40, min_col=1, max_col=2, values_only=True):
+#     x_very_good.append([float(cell) for cell in row if cell is not None])
+#
+#
+#
+# yVB = dataclean(x_very_bad, 0, 10, 0.05, 0.05)[0]
+# yB = dataclean(x_bad, 0, 10, 0.05, 0.05)[0]
+# ySB = dataclean(x_somewhat_bad, 0, 10, 0.05, 0.05)[0]
+# yF = dataclean(x_fair, 0, 10, 0.05, 0.05)[0]
+# ySG = dataclean(x_somewhat_good, 0, 10, 0.05, 0.05)[0]
+# yG = dataclean(x_good, 0, 10, 0.05, 0.05)[0]
+# yVG = dataclean(x_very_good, 0, 10, 0.05, 0.05)[0]
