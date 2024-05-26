@@ -122,11 +122,12 @@ def cd_delta_plus(w1, w2, r1, r2):
 def cd_delta_minus(w1, w2, r1, r2):
     if r2 != 0:
         if r1 > 0:
-            out = 100 * (((1 - w1) * (w2 ** (r2 / r1)) + w1) ** (1 / r2) - 1)
+            out = 100 * ((1 - w1) * (w2 ** (r2 / r1)) + w1) ** (1 / r2) - 100
         else:
-            out = 100 * (1 - (w1 ** (1 / r2)))
+            out = 100 * (w1 ** (1 / r2)) - 100
     else:
         out = 0
+
     return out
 
 
@@ -200,27 +201,30 @@ r2 = r_exponent(14 / 16)
 def fAR2(x, y):
     return zdc(x, y, wAR[0], wAR[1], 1, r2)
 
-# Create a mesh grid
-x = np.linspace(0.001, 1, 50)
-y = np.linspace(0.001, 1, 50)
-X, Y = np.meshgrid(x, y)
+# # Create a mesh grid
+# x = np.linspace(0.001, 1, 50)
+# y = np.linspace(0.001, 1, 50)
+# X, Y = np.meshgrid(x, y)
+#
+# # Evaluate the function over the mesh grid using the safe wrapper
+# Z = np.vectorize(fAR2)(X, Y)
+#
+# # Ensure Z contains finite values for contour plot
+# Z = np.nan_to_num(Z, nan=np.nanmin(Z))
+#
+# # Define contour levels at 0.1 intervals
+# levels = np.arange(np.nanmin(Z), np.nanmax(Z) + 0.1, 0.1)
+#
+# # Plot the mesh grid
+# plt.figure(figsize=(8, 6))
+# contour = plt.contourf(X, Y, Z, levels=levels, cmap='viridis')
+# cbar = plt.colorbar(contour, ticks=np.arange(np.nanmin(Z), np.nanmax(Z) + 0.1, 0.1))
+# cbar.ax.set_ylabel('fAR2(x, y)')
+# plt.xlabel('x')
+# plt.ylabel('y')
+# plt.title('Contour plot of fAR2(x, y)')
+# plt.show()
 
-# Evaluate the function over the mesh grid using the safe wrapper
-Z = np.vectorize(fAR2)(X, Y)
+wRA = wcd(r_exponent(14 / 16), 1, -25, 15)
 
-# Ensure Z contains finite values for contour plot
-Z = np.nan_to_num(Z, nan=np.nanmin(Z))
-
-# Define contour levels at 0.1 intervals
-levels = np.arange(np.nanmin(Z), np.nanmax(Z) + 0.1, 0.1)
-
-# Plot the mesh grid
-plt.figure(figsize=(8, 6))
-contour = plt.contourf(X, Y, Z, levels=levels, cmap='viridis')
-cbar = plt.colorbar(contour, ticks=np.arange(np.nanmin(Z), np.nanmax(Z) + 0.1, 0.1))
-cbar.ax.set_ylabel('fAR2(x, y)')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('Contour plot of fAR2(x, y)')
-plt.show()
-
+print(wRA)

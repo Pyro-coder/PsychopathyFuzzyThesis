@@ -109,24 +109,37 @@ def dc_delta_minus(w1, w2, r1, r2):
 
 # Define the cd_delta_plus function for CD variant
 def cd_delta_plus(w1, w2, r1, r2):
-    def integrand(x):
-        return zcd(x, 1, w1, w2, r1, r2)
+    """
+    Calculate δ+ for CD variant
+    Note that r1 < 1, r2 >= 1 in this variant, and a = w1, b = w2 in Dujmovic's paper
+    δ+ is the specified (Reward) truth value in % of a CD variant partial absorption operator when the absorption controlled variable y = 0
+    δ+ and δ- are used to determine the weights w1 and w2 of partial absorption operator
+    """
+    integrand = lambda x: zcd(x, 1, w1, w2, r1, r2)
 
-    integral_value, _ = integrate.quad(integrand, 0, 1, epsabs=1e-10, epsrel=1e-10)
-    delta_plus = 100 * abs(2 * integral_value - 1)
+    integral_result, _ = integrate.quad(integrand, 0, 1)
+
+    delta_plus = 100 * abs(2 * integral_result - 1)
 
     return delta_plus
 
 
 # Define the cd_delta_minus function for CD variant
 def cd_delta_minus(w1, w2, r1, r2):
+    """
+    Calculate δ- for CD variant
+    Note that r1 < 1, r2 >= 1 in this variant, and a = w1, b = w2 in Dujmovic's paper
+    δ- is the (Penalty) reduction in truth value (%) of CD variant partial absorption operator when the absorption controlled variable y = 1
+    δ+ and δ- are used to determine the weights w1 and w2 of partial absorption operator
+    """
     if r2 != 0:
         if r1 > 0:
-            out = 100 * (((1 - w1) * (w2 ** (r2 / r1)) + w1) ** (1 / r2) - 1)
+            out = 100 * ((1 - w1) * (w2 ** (r2 / r1)) + w1) ** (1 / r2) - 100
         else:
-            out = 100 * (1 - (w1 ** (1 / r2)))
+            out = 100 * (w1 ** (1 / r2)) - 100
     else:
         out = 0
+
     return out
 
 
@@ -188,38 +201,30 @@ def wcd(r1, r2, P, R):
 
     return np.array([w1_opt, w2_opt])
 
+# # Create a mesh grid
+# x = np.linspace(0.001, 1, 50)
+# y = np.linspace(0.001, 1, 50)
+# X, Y = np.meshgrid(x, y)
+#
+# # Evaluate the function over the mesh grid using the safe wrapper
+# Z = np.vectorize(fAR2)(X, Y)
+#
+# # Ensure Z contains finite values for contour plot
+# Z = np.nan_to_num(Z, nan=np.nanmin(Z))
+#
+# # Define contour levels at 0.1 intervals
+# levels = np.arange(np.nanmin(Z), np.nanmax(Z) + 0.1, 0.1)
+#
+# # Plot the mesh grid
+# plt.figure(figsize=(8, 6))
+# contour = plt.contourf(X, Y, Z, levels=levels, cmap='viridis')
+# cbar = plt.colorbar(contour, ticks=np.arange(np.nanmin(Z), np.nanmax(Z) + 0.1, 0.1))
+# cbar.ax.set_ylabel('fAR2(x, y)')
+# plt.xlabel('x')
+# plt.ylabel('y')
+# plt.title('Contour plot of fAR2(x, y)')
+# plt.show()
 
-wAR = wdc(1, r_exponent(14 / 16), -25, 15)
-print(wAR)
+wRA = wcd(r_exponent(14 / 16), 1, -25, 15)
 
-print(dc_delta_plus(wAR[0], wAR[1], 1, r_exponent(14 / 16)))
-print(dc_delta_minus(wAR[0], wAR[1], 1, r_exponent(14 / 16)))
-r2 = r_exponent(14 / 16)
-
-
-def fAR2(x, y):
-    return zdc(x, y, wAR[0], wAR[1], 1, r2)
-
-# Create a mesh grid
-x = np.linspace(0.001, 1, 50)
-y = np.linspace(0.001, 1, 50)
-X, Y = np.meshgrid(x, y)
-
-# Evaluate the function over the mesh grid using the safe wrapper
-Z = np.vectorize(fAR2)(X, Y)
-
-# Ensure Z contains finite values for contour plot
-Z = np.nan_to_num(Z, nan=np.nanmin(Z))
-
-# Define contour levels at 0.1 intervals
-levels = np.arange(np.nanmin(Z), np.nanmax(Z) + 0.1, 0.1)
-
-# Plot the mesh grid
-plt.figure(figsize=(8, 6))
-contour = plt.contourf(X, Y, Z, levels=levels, cmap='viridis')
-cbar = plt.colorbar(contour, ticks=np.arange(np.nanmin(Z), np.nanmax(Z) + 0.1, 0.1))
-cbar.ax.set_ylabel('fAR2(x, y)')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('Contour plot of fAR2(x, y)')
-plt.show()
+print(wRA)
