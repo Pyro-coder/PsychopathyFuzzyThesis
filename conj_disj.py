@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 
 import EKM
+import fou_points
 import trapezoid as tpz
 import t2_centroid as t2c
 import numpy as np
@@ -9,6 +10,8 @@ import scipy.optimize as opt
 import scipy.integrate as integrate
 import mystic.symbolic as ms
 from mystic.solvers import fmin
+import alpha_cuts_UMF_LMF as acul
+from calculate_mf_from_alpha_cuts import mu_sf
 from mystic.penalty import quadratic_inequality
 from mystic.constraints import as_constraint
 
@@ -653,3 +656,221 @@ def z4u(x):
         MLIu(x),
         VIu(x)
     ])
+
+
+def fNVL(x):
+    return np.array([z8u(x)[0], z8l(x)[0]])
+
+
+def fVL(x):
+    return np.array([z8u(x)[1], z8l(x)[1]])
+
+
+def fL(x):
+    return np.array([z8u(x)[2], z8l(x)[2]])
+
+
+def fMLL(x):
+    return np.array([z8u(x)[3], z8l(x)[3]])
+
+
+def fFMLH(x):
+    return np.array([z8u(x)[4], z8l(x)[4]])
+
+
+def fMLH(x):
+    return np.array([z8u(x)[5], z8l(x)[5]])
+
+
+def fH(x):
+    return np.array([z8u(x)[6], z8l(x)[6]])
+
+
+def fEH(x):
+    return np.array([z8u(x)[7], z8l(x)[7]])
+
+
+def fVB(x):
+    return np.array([z7u(x)[0], z7l(x)[0]])
+
+
+def fB(x):
+    return np.array([z7u(x)[1], z7l(x)[1]])
+
+
+def fSB(x):
+    return np.array([z7u(x)[2], z7l(x)[2]])
+
+
+def fF(x):
+    return np.array([z7u(x)[3], z7l(x)[3]])
+
+
+def fSG(x):
+    return np.array([z7u(x)[4], z7l(x)[4]])
+
+
+def fG(x):
+    return np.array([z7u(x)[5], z7l(x)[5]])
+
+
+def fVG(x):
+    return np.array([z7u(x)[6], z7l(x)[6]])
+
+
+def fU(x):
+    return np.array([z4u(x)[0], z4l(x)[0]])
+
+
+def fMLU(x):
+    return np.array([z4u(x)[1], z4l(x)[1]])
+
+
+def fMLI(x):
+    return np.array([z4u(x)[2], z4l(x)[2]])
+
+
+def fVI(x):
+    return np.array([z4u(x)[3], z4l(x)[3]])
+
+
+alpha_NVL = acul.alpha_t2(fNVL, 1000, 0, 10, 100, 300)
+alpha_VL = acul.alpha_t2(fVL, 1000, 0, 10, 100, 300)
+alpha_L = acul.alpha_t2(fL, 1000, 0, 10, 100, 300)
+alpha_MLL = acul.alpha_t2(fMLL, 1000, 0, 10, 100, 300)
+alpha_FMLH = acul.alpha_t2(fFMLH, 1000, 0, 10, 100, 300)
+alpha_MLH = acul.alpha_t2(fMLH, 1000, 0, 10, 100, 300)
+alpha_H = acul.alpha_t2(fH, 1000, 0, 10, 100, 300)
+alpha_EH = acul.alpha_t2(fEH, 1000, 0, 10, 100, 300)
+
+alpha_VB = acul.alpha_t2(fVB, 1000, 0, 10, 100, 300)
+alpha_B = acul.alpha_t2(fB, 1000, 0, 10, 100, 300)
+alpha_SB = acul.alpha_t2(fSB, 1000, 0, 10, 100, 300)
+alpha_F = acul.alpha_t2(fF, 1000, 0, 10, 100, 300)
+alpha_SG = acul.alpha_t2(fSG, 1000, 0, 10, 100, 300)
+alpha_G = acul.alpha_t2(fG, 1000, 0, 10, 100, 300)
+alpha_VG = acul.alpha_t2(fVG, 1000, 0, 10, 100, 300)
+
+alpha_U = acul.alpha_t2(fU, 1000, 0, 10, 100, 300)
+alpha_MLU = acul.alpha_t2(fMLU, 1000, 0, 10, 100, 300)
+alpha_MLI = acul.alpha_t2(fMLI, 1000, 0, 10, 100, 300)
+alpha_VI = acul.alpha_t2(fVI, 1000, 0, 10, 100, 300)
+
+
+def alpha_antonym(a):
+    rows, cols = a.shape
+    out = np.zeros_like(a)
+
+    for i in range(rows):
+        out[i, 1] = 10 - a[i, 0]
+        out[i, 0] = 10 - a[i, 1]
+        out[i, 2] = a[i, 2]
+
+    return out
+
+
+rrr = r_exponent(0.8)
+
+r = -1
+
+zAU = [alpha_antonym(alpha_FMLH[0]), alpha_antonym(alpha_FMLH[0]), alpha_EH[0], alpha_G[0]]
+zAL = [alpha_antonym(alpha_FMLH[1]), alpha_antonym(alpha_FMLH[1]), alpha_EH[1], alpha_G[1]]
+wAU = [alpha_U[0], alpha_MLU[0], alpha_VI[0], alpha_MLU[0]]
+wAL = [alpha_U[1], alpha_MLU[1], alpha_VI[1], alpha_MLU[1]]
+
+alpha_wpm = acpm.alpha_to_alpha_t2wpm(zAU, zAL, wAU, wAL, r)
+
+cwpm = t2c.t2_centroid(alpha_wpm[0], alpha_wpm[1], 300)
+dwpm = t2c.defuzz(cwpm)
+cl = cwpm[0]
+cr = cwpm[1]
+
+alpha_lwa = acpm.alpha_to_alpha_t2wpm(zAU, zAL, wAU, wAL, 1)
+
+clwa = t2c.t2_centroid(alpha_lwa[0], alpha_lwa[1], 300)
+dlwa = t2c.defuzz(clwa)
+
+
+def wpmU(x):
+    return mu_sf(x, alpha_wpm[0])
+
+
+def wpmL(x):
+    return mu_sf(x, alpha_wpm[1])
+
+
+def lwaU(x):
+    return mu_sf(x, alpha_lwa[0])
+
+
+def lwaL(x):
+    return mu_sf(x, alpha_lwa[1])
+
+
+specAlcw = cwpm
+specAldw = dwpm
+specAlcl = clwa
+specAldl = dlwa
+
+fou_wpm = fou_points.fouset(wpmU, wpmL, 0, 10, 0.15, 0.05)
+
+foulwa = fou_points.fouset(lwaU, lwaL, 0, 10, 0.11, 0.06)
+
+j = range(0, fou_wpm.shape[0])
+k = range(0, foulwa.shape[0])
+
+
+# Generate x values
+x_values = np.arange(0, 10.01, 0.01)
+
+# Calculate y values for wpmU, wpmL, lwaU, and lwaL
+y_values_wpmU = [wpmU(x) for x in x_values]
+y_values_wpmL = [wpmL(x) for x in x_values]
+y_values_lwaU = [lwaU(x) for x in x_values]
+y_values_lwaL = [lwaL(x) for x in x_values]
+
+# Assuming fou_wpm and foulwa are defined arrays with the coordinates of the FOU points
+fou_wpm = fou_points.fouset(wpmU, wpmL, 0, 10, 0.15, 0.05)
+foulwa = fou_points.fouset(lwaU, lwaL, 0, 10, 0.11, 0.06)
+
+# # Extracting coordinates for scatter plots
+# x_coords_fou_wpm = [coord[0] for coord in fou_wpm]
+# y_coords_fou_wpm = [coord[1] for coord in fou_wpm]
+# x_coords_fou_lwa = [coord[0] for coord in foulwa]
+# y_coords_fou_lwa = [coord[1] for coord in foulwa]
+#
+# # Create a high-quality plot
+# plt.figure(figsize=(12, 8), dpi=300)
+#
+# # Plot wpmU and wpmL
+# plt.plot(x_values, y_values_wpmU, label='wpmU(x)', color='blue', linestyle='-')
+# plt.plot(x_values, y_values_wpmL, label='wpmL(x)', color='blue', linestyle='--')
+#
+# # Scatter plot for fou_wpm points
+# plt.scatter(x_coords_fou_wpm, y_coords_fou_wpm, c='blue', s=1, label='fou_wpm')
+#
+# # Plot lwaU and lwaL
+# plt.plot(x_values, y_values_lwaU, label='lwaU(x)', color='red', linestyle='-')
+# plt.plot(x_values, y_values_lwaL, label='lwaL(x)', color='red', linestyle='--')
+#
+# # Scatter plot for foulwa points
+# plt.scatter(x_coords_fou_lwa, y_coords_fou_lwa, c='red', s=1, label='fou_lwa')
+#
+# # Plot the centroids
+# plt.scatter(cwpm[0], 1, c='green', label='Centroid Left')
+# plt.scatter(cwpm[1], 1, c='green', label='Centroid Right')
+#
+# # Plot the defuzzified centroid
+# plt.scatter(dwpm, 1, c='blue', label='Defuzzified Centroid')
+#
+# # Customize the plot
+# plt.xlabel('x')
+# plt.ylabel('Membership Degree')
+# plt.title('LWA and WPM Type-2 Fuzzy Sets')
+# plt.legend()
+# plt.grid(True)
+#
+# # Display the plot
+# plt.show()
+
+
