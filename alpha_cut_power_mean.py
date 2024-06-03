@@ -26,6 +26,7 @@ def alpha_to_alpha_t2wpm(aux, alx, auw, alw, r):
     Returns:
         list: A nested 2-vector, each element containing an array of corresponding α-cut intervals of the WPM UMF/LMF, respectively.
     """
+
     n = len(aux)
     m = len(aux[0])
 
@@ -377,23 +378,16 @@ r = -10
 
 alpha_wpm = alpha_to_alpha_t2wpm(auz, alz, auw, alw, r)
 
+
 def wpm_u(x):
     return mu_sf(x, alpha_wpm[0])
+
 
 def wpm_l(x):
     return mu_sf(x, alpha_wpm[1])
 
+
 wpm_fou = fouset(wpm_u, wpm_l, 0, 10, 0.04, 0.013)
-
-
-
-
-
-
-
-
-
-
 
 # # PLOTTING CODE HERE
 # x_values = np.arange(0, 10.01, 0.01)

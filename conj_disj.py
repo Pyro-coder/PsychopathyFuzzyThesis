@@ -816,22 +816,22 @@ fou_wpm = fou_points.fouset(wpmU, wpmL, 0, 10, 0.15, 0.05)
 
 foulwa = fou_points.fouset(lwaU, lwaL, 0, 10, 0.11, 0.06)
 
-j = range(0, fou_wpm.shape[0])
-k = range(0, foulwa.shape[0])
-
-
-# Generate x values
-x_values = np.arange(0, 10.01, 0.01)
-
-# Calculate y values for wpmU, wpmL, lwaU, and lwaL
-y_values_wpmU = [wpmU(x) for x in x_values]
-y_values_wpmL = [wpmL(x) for x in x_values]
-y_values_lwaU = [lwaU(x) for x in x_values]
-y_values_lwaL = [lwaL(x) for x in x_values]
-
-# Assuming fou_wpm and foulwa are defined arrays with the coordinates of the FOU points
-fou_wpm = fou_points.fouset(wpmU, wpmL, 0, 10, 0.15, 0.05)
-foulwa = fou_points.fouset(lwaU, lwaL, 0, 10, 0.11, 0.06)
+# j = range(0, fou_wpm.shape[0])
+# k = range(0, foulwa.shape[0])
+#
+#
+# # Generate x values
+# x_values = np.arange(0, 10.01, 0.01)
+#
+# # Calculate y values for wpmU, wpmL, lwaU, and lwaL
+# y_values_wpmU = [wpmU(x) for x in x_values]
+# y_values_wpmL = [wpmL(x) for x in x_values]
+# y_values_lwaU = [lwaU(x) for x in x_values]
+# y_values_lwaL = [lwaL(x) for x in x_values]
+#
+# # Assuming fou_wpm and foulwa are defined arrays with the coordinates of the FOU points
+# fou_wpm = fou_points.fouset(wpmU, wpmL, 0, 10, 0.15, 0.05)
+# foulwa = fou_points.fouset(lwaU, lwaL, 0, 10, 0.11, 0.06)
 
 # # Extracting coordinates for scatter plots
 # x_coords_fou_wpm = [coord[0] for coord in fou_wpm]
@@ -874,3 +874,182 @@ foulwa = fou_points.fouset(lwaU, lwaL, 0, 10, 0.11, 0.06)
 # plt.show()
 
 
+wAU1 = 0.653
+wAL1 = 0.653
+wAU2 = 0.065
+wAL2 = 0.065
+r1 = 1.449
+r2 = -10
+
+
+def alpha_w_constant(constant):
+    w = np.zeros(101)
+    alpha = np.zeros(101)
+
+    for i in range(101):
+        w[i] = constant
+        alpha[i] = i / 100
+
+    # Stack arrays horizontally to create a row-major structure
+    out = [0, 0]
+    out[0] = np.array([w, w, alpha]).T  # Transpose to switch to row-major
+    out[1] = one_minus(out[0])
+
+    return out
+
+
+awAU1 = alpha_w_constant(wAU1)
+awAL1 = alpha_w_constant(wAL1)
+awAU2 = alpha_w_constant(wAU2)
+awAL2 = alpha_w_constant(wAL2)
+
+zAU1 = alpha_EH[0]
+zAL1 = alpha_EH[1]
+
+wAU3 = [alpha_U[0], alpha_MLU[0], alpha_MLU[0]]
+wAL3 = [alpha_U[1], alpha_MLU[1], alpha_MLU[1]]
+
+zAU3 = [alpha_antonym(alpha_FMLH[0]), alpha_antonym(alpha_FMLH[0]), alpha_G[0]]
+
+zAL3 = [alpha_antonym(alpha_FMLH[1]), alpha_antonym(alpha_FMLH[1]), alpha_G[1]]
+
+alpha_wpm3 = acpm.alpha_to_alpha_t2wpm(zAU3, zAL3, wAU3, wAL3, -1)
+
+zAU2 = [zAU1, alpha_wpm3[0]]
+zAL2 = [zAL1, alpha_wpm3[1]]
+
+alpha_wpm_disj = acpm.alpha_to_alpha_t2wpm(zAU2, zAL2, awAU1, awAL1, r1)
+
+zAU4 = [zAU1, alpha_wpm_disj[0]]
+zAL4 = [zAL1, alpha_wpm_disj[1]]
+
+alpha_wpm_conj = acpm.alpha_to_alpha_t2wpm(zAU4, zAL4, awAU2, awAL2, r2)
+
+
+def cpawpmU(x):
+    return mu_sf(x, alpha_wpm_conj[0])
+
+
+def cpawpmL(x):
+    return mu_sf(x, alpha_wpm_conj[1])
+
+
+foucpa = fou_points.fouset(cpawpmU, cpawpmL, 0, 10, 0.15, 0.05)
+
+zAU = [alpha_antonym(alpha_FMLH[0]), alpha_antonym(alpha_FMLH[0]), alpha_EH[0], alpha_G[0]]
+zAL = [alpha_antonym(alpha_FMLH[1]), alpha_antonym(alpha_FMLH[1]), alpha_EH[1], alpha_G[1]]
+wAU = [alpha_U[0], alpha_MLU[0], alpha_VI[0], alpha_MLU[0]]
+wAL = [alpha_U[1], alpha_MLU[1], alpha_VI[1], alpha_MLU[1]]
+
+cwpm = t2c.t2_centroid(alpha_wpm_conj[0], alpha_wpm_conj[1], 300)
+dwpm = t2c.defuzz(cwpm)
+cl = cwpm[0]
+cr = cwpm[1]
+
+alpha_lwa = acpm.alpha_to_alpha_t2wpm(zAU, zAL, wAU, wAL, 1)
+clwa = t2c.t2_centroid(alpha_lwa[0], alpha_lwa[1], 300)
+dlwa = t2c.defuzz(clwa)
+
+
+def lwaU(x):
+    return mu_sf(x, alpha_lwa[0])
+
+
+def lwaL(x):
+    return mu_sf(x, alpha_lwa[1])
+
+# specAlcw = cwpm
+# specAlcl = clwa
+# specAldw = dwpm
+# specAldl = dlwa
+
+j = range(0, foucpa.shape[0])
+k = range(0, foulwa.shape[0])
+
+# # Generate x values
+# x_values = np.arange(0, 10.01, 0.01)
+#
+# # Calculate y values for wpmU, wpmL, lwaU, and lwaL
+# y_values_cpaU = [cpawpmU(x) for x in x_values]
+# y_values_cpaL = [cpawpmL(x) for x in x_values]
+# y_values_lwaU = [lwaU(x) for x in x_values]
+# y_values_lwaL = [lwaL(x) for x in x_values]
+#
+# # Assuming fou_wpm and foulwa are defined arrays with the coordinates of the FOU points
+# fou_wpm = fou_points.fouset(cpawpmU, cpawpmL, 0, 10, 0.15, 0.05)
+# foulwa = fou_points.fouset(lwaU, lwaL, 0, 10, 0.11, 0.06)
+#
+# # Extracting coordinates for scatter plots
+# x_coords_foucpa = [coord[0] for coord in foucpa]
+# y_coords_foucpa = [coord[1] for coord in foucpa]
+# x_coords_fou_lwa = [coord[0] for coord in foulwa]
+# y_coords_fou_lwa = [coord[1] for coord in foulwa]
+#
+# # Create a high-quality plot
+# plt.figure(figsize=(12, 8), dpi=300)
+#
+# # Plot wpmU and wpmL
+# plt.plot(x_values, y_values_cpaU, label='wpmU(x)', color='blue', linestyle='-')
+# plt.plot(x_values, y_values_cpaL, label='wpmL(x)', color='blue', linestyle='--')
+#
+# # Scatter plot for foucpa points
+# plt.scatter(x_coords_foucpa, y_coords_foucpa, c='blue', s=1, label='fou_cpa')
+#
+# # Plot lwaU and lwaL
+# plt.plot(x_values, y_values_lwaU, label='lwaU(x)', color='red', linestyle='-')
+# plt.plot(x_values, y_values_lwaL, label='lwaL(x)', color='red', linestyle='--')
+#
+# # Scatter plot for foulwa points
+# plt.scatter(x_coords_fou_lwa, y_coords_fou_lwa, c='red', s=1, label='fou_lwa')
+#
+# # Plot the centroids
+# plt.scatter(cwpm[0], 1, c='green', label='Centroid Left')
+# plt.scatter(cwpm[1], 1, c='green', label='Centroid Right')
+#
+# # Plot the defuzzified centroid
+# plt.scatter(dwpm, 1, c='blue', label='Defuzzified Centroid')
+#
+# # Customize the plot
+# plt.xlabel('x')
+# plt.ylabel('Membership Degree')
+# plt.title('LWA and WPM Type-2 Fuzzy Sets')
+# plt.legend()
+# plt.grid(True)
+#
+# # Display the plot
+# plt.show()
+
+
+p1 = r_exponent(6 / 16)
+p2 = r_exponent(12 / 16)
+
+
+def w_table(d, c):
+    # Initialize out to array headings
+    out = [["Disjunction power = ", d, "Conjunction power = ", c]]
+    out.append([" ", " ", " ", " "])
+    out.append(["Penalty", "Reward", "w1", "w2"])
+
+    # Define penalty and reward matrices
+    penalties = np.array([-10, -15, -20, -25])
+    rewards = np.array([10, 15, 20, 25])
+
+    for P in penalties:
+        for R in rewards:
+            try:
+                # Calculate w1 and w2
+                w = wdc(d, c, P, R)
+            except Exception as e:
+                # Handle any exceptions that might occur in wDC
+                print(f"An error occurred: {e}")
+                return np.array([[P], [R]])
+
+            # Append the results to the output
+            out.append([P, R, w[0], w[1]])
+
+    return np.array(out)
+
+
+ww = w_table(p1, p2)
+
+print(ww)
