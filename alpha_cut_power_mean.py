@@ -116,89 +116,89 @@ def apply_trapezoidal_mfs(x, arrays):
     return np.array(results)
 
 
-# Membership function parameters
-zu0 = np.array([1, 0.1, 0.8, 1.2, 2])
-zl0 = np.array([0.8, 0.5, 0.8, 1.2, 1.5])
-wu0 = np.array([1, 0, 0.7, 1.3, 2])
-wl0 = np.array([0.8, 0, 1, 1, 2])
-zu1 = np.array([1, 0.1, 1, 2, 3])
-zl1 = np.array([0.7, 0.5, 1.5, 1.8, 2.5])
-wu1 = np.array([1, 0, 1.8, 2.2, 3])
-wl1 = np.array([0.6, 1, 1.5, 2, 2.5])
-
-
-def zu(x):
-    """Compute trapezoidal MFs for zu parameters."""
-    params = [zu0, zu1]  # zu1
-    results = [trap(x, *param) for param in params]
-    return np.array(results)
-
-
-def zl(x):
-    """Compute trapezoidal MFs for zl parameters."""
-    params = [zl0, zl1]  # zl1
-    results = [trap(x, *param) for param in params]
-    return np.array(results)
-
-
-def wu(x):
-    """Compute trapezoidal MFs for wu parameters."""
-    params = [wu0, wu1]  # wu1
-    results = [trap(x, *param) for param in params]
-    return np.array(results)
-
-
-def wl(x):
-    """Compute trapezoidal MFs for wl parameters."""
-    params = [wl0, wl1]  # wl1
-    results = [trap(x, *param) for param in params]
-    return np.array(results)
-
-
-def z0u(x):
-    """Function to extract the first element from the vector returned by zu(x)."""
-    return select_f(zu, x, 0)  # 0 indicates the first element
-
-
-# Function to extract the second element from the vector returned by zu(x)
-def z1u(x):
-    return select_f(zu, x, 1)
-
-
-# Function to extract the first element from the vector returned by zl(x)
-def z0l(x):
-    return select_f(zl, x, 0)
-
-
-# Function to extract the second element from the vector returned by zl(x)
-def z1l(x):
-    return select_f(zl, x, 1)
-
-
-# Function to extract the first element from the vector returned by wu(x)
-def w0u(x):
-    return select_f(wu, x, 0)
-
-
-# Function to extract the second element from the vector returned by wu(x)
-def w1u(x):
-    return select_f(wu, x, 1)
-
-
-# Function to extract the first element from the vector returned by wl(x)
-def w0l(x):
-    return select_f(wl, x, 0)
-
-
-# Function to extract the second element from the vector returned by wl(x)
-def w1l(x):
-    return select_f(wl, x, 1)
-
-
-z0fou = fouset(z0u, z0l, 0, 10, .01, 0.012)
-z1fou = fouset(z1u, z1l, 0, 10, .01, 0.013)
-w0fou = fouset(w0u, w0l, 0, 10, .01, 0.012)
-w1fou = fouset(w1u, w1l, 0, 10, .01, 0.013)
+# # Membership function parameters
+# zu0 = np.array([1, 0.1, 0.8, 1.2, 2])
+# zl0 = np.array([0.8, 0.5, 0.8, 1.2, 1.5])
+# wu0 = np.array([1, 0, 0.7, 1.3, 2])
+# wl0 = np.array([0.8, 0, 1, 1, 2])
+# zu1 = np.array([1, 0.1, 1, 2, 3])
+# zl1 = np.array([0.7, 0.5, 1.5, 1.8, 2.5])
+# wu1 = np.array([1, 0, 1.8, 2.2, 3])
+# wl1 = np.array([0.6, 1, 1.5, 2, 2.5])
+#
+#
+# def zu(x):
+#     """Compute trapezoidal MFs for zu parameters."""
+#     params = [zu0, zu1]  # zu1
+#     results = [trap(x, *param) for param in params]
+#     return np.array(results)
+#
+#
+# def zl(x):
+#     """Compute trapezoidal MFs for zl parameters."""
+#     params = [zl0, zl1]  # zl1
+#     results = [trap(x, *param) for param in params]
+#     return np.array(results)
+#
+#
+# def wu(x):
+#     """Compute trapezoidal MFs for wu parameters."""
+#     params = [wu0, wu1]  # wu1
+#     results = [trap(x, *param) for param in params]
+#     return np.array(results)
+#
+#
+# def wl(x):
+#     """Compute trapezoidal MFs for wl parameters."""
+#     params = [wl0, wl1]  # wl1
+#     results = [trap(x, *param) for param in params]
+#     return np.array(results)
+#
+#
+# def z0u(x):
+#     """Function to extract the first element from the vector returned by zu(x)."""
+#     return select_f(zu, x, 0)  # 0 indicates the first element
+#
+#
+# # Function to extract the second element from the vector returned by zu(x)
+# def z1u(x):
+#     return select_f(zu, x, 1)
+#
+#
+# # Function to extract the first element from the vector returned by zl(x)
+# def z0l(x):
+#     return select_f(zl, x, 0)
+#
+#
+# # Function to extract the second element from the vector returned by zl(x)
+# def z1l(x):
+#     return select_f(zl, x, 1)
+#
+#
+# # Function to extract the first element from the vector returned by wu(x)
+# def w0u(x):
+#     return select_f(wu, x, 0)
+#
+#
+# # Function to extract the second element from the vector returned by wu(x)
+# def w1u(x):
+#     return select_f(wu, x, 1)
+#
+#
+# # Function to extract the first element from the vector returned by wl(x)
+# def w0l(x):
+#     return select_f(wl, x, 0)
+#
+#
+# # Function to extract the second element from the vector returned by wl(x)
+# def w1l(x):
+#     return select_f(wl, x, 1)
+#
+#
+# z0fou = fouset(z0u, z0l, 0, 10, .01, 0.012)
+# z1fou = fouset(z1u, z1l, 0, 10, .01, 0.013)
+# w0fou = fouset(w0u, w0l, 0, 10, .01, 0.012)
+# w1fou = fouset(w1u, w1l, 0, 10, .01, 0.013)
 
 # u = np.arange(0, 3.01, 0.01)
 
@@ -221,52 +221,52 @@ w1fou = fouset(w1u, w1l, 0, 10, .01, 0.013)
 # plt.show()
 
 
-# Construct the support intervals matrix for zu and wu
-xsup = np.array([
-    [zu0[1], zu0[4]],  # Extracting the second and fifth elements of the first trapezoidal function
-    [zu1[1], zu1[4]]  # Same extraction for the second function
-])
-
-wsup = np.array([
-    [wu0[1], wu0[4]],  # Similarly for wu
-    [wu1[1], wu1[4]]
-])
-
-# Call the αfwa function with the specified parameters
-Au = alpha_fwa(zu, wu, xsup, wsup, 100, 300)
-
-# Construct the support intervals matrix for zl and wl
-xsup = np.array([
-    [zl0[1], zl0[4]],  # Extracting specific elements for zl
-    [zl1[1], zl1[4]]
-])
-
-wsup = np.array([
-    [wl0[1], wl0[4]],  # Similarly for wl
-    [wl1[1], wl1[4]]
-])
-
-# Call the αfwa function to compute the alpha cuts for the LMF
-Al = alpha_fwa(zl, wl, xsup, wsup, 100, 300)
-
-
-def lwa_umf(x):
-    return mu_sf(x, Au)
+# # Construct the support intervals matrix for zu and wu
+# xsup = np.array([
+#     [zu0[1], zu0[4]],  # Extracting the second and fifth elements of the first trapezoidal function
+#     [zu1[1], zu1[4]]  # Same extraction for the second function
+# ])
+#
+# wsup = np.array([
+#     [wu0[1], wu0[4]],  # Similarly for wu
+#     [wu1[1], wu1[4]]
+# ])
+#
+# # Call the αfwa function with the specified parameters
+# Au = alpha_fwa(zu, wu, xsup, wsup, 100, 300)
+#
+# # Construct the support intervals matrix for zl and wl
+# xsup = np.array([
+#     [zl0[1], zl0[4]],  # Extracting specific elements for zl
+#     [zl1[1], zl1[4]]
+# ])
+#
+# wsup = np.array([
+#     [wl0[1], wl0[4]],  # Similarly for wl
+#     [wl1[1], wl1[4]]
+# ])
+#
+# # Call the αfwa function to compute the alpha cuts for the LMF
+# Al = alpha_fwa(zl, wl, xsup, wsup, 100, 300)
 
 
-def lwa_lmf(x):
-    return mu_sf(x, Al)
-
-
-c = t2_centroid(Au, Al, 300)
-# print(c)
-
-lwa_fou = fouset(lwa_umf, lwa_lmf, 0, 10, 0.05, 0.012)
-
-cl = c[0]
-cr = c[1]
-
-m = defuzz(c)
+# def lwa_umf(x):
+#     return mu_sf(x, Au)
+#
+#
+# def lwa_lmf(x):
+#     return mu_sf(x, Al)
+#
+#
+# c = t2_centroid(Au, Al, 300)
+# # print(c)
+#
+# lwa_fou = fouset(lwa_umf, lwa_lmf, 0, 10, 0.05, 0.012)
+#
+# cl = c[0]
+# cr = c[1]
+#
+# m = defuzz(c)
 
 
 # print(m)
@@ -331,63 +331,63 @@ def t2wpmtroid(Au, Al, N, r):
 
 # print(t2wpmtroid(Au, Al, 1000, 0))
 
-def fz0(x):
-    return np.array([[z0u(x)], [z0l(x)]])
-
-
-def fw0(x):
-    return np.array([[w0u(x)], [w0l(x)]])
-
-
-def fz1(x):
-    return np.array([[z1u(x)], [z1l(x)]])
-
-
-def fw1(x):
-    return np.array([[w1u(x)], [w1l(x)]])
-
-
-Az0 = alpha_t2(fz0, 300, 0, 4, 100, 300)
-Aw0 = alpha_t2(fw0, 300, 0, 4, 100, 300)
-Az1 = alpha_t2(fz1, 300, 0, 4, 100, 300)
-Aw1 = alpha_t2(fw1, 300, 0, 4, 100, 300)
-
-
-def lwa_u(x):
-    return mu_sf(x, Au)
-
-
-def lwa_l(x):
-    return mu_sf(x, Al)
-
-
-lwa_fou = fouset(lwa_u, lwa_l, 0, 10, 0.04, 0.012)
-
-c = t2_centroid(Au, Al, 300)
-cl = c[0]
-cr = c[1]
-m = defuzz(c)
-
-auz = [Az0[0], Az1[0]]
-alz = [Az0[1], Az1[1]]
-
-auw = [Aw0[0], Aw1[0]]
-alw = [Aw0[1], Aw1[1]]
-
-r = -10
-
-alpha_wpm = alpha_to_alpha_t2wpm(auz, alz, auw, alw, r)
-
-
-def wpm_u(x):
-    return mu_sf(x, alpha_wpm[0])
-
-
-def wpm_l(x):
-    return mu_sf(x, alpha_wpm[1])
-
-
-wpm_fou = fouset(wpm_u, wpm_l, 0, 10, 0.04, 0.013)
+# def fz0(x):
+#     return np.array([[z0u(x)], [z0l(x)]])
+#
+#
+# def fw0(x):
+#     return np.array([[w0u(x)], [w0l(x)]])
+#
+#
+# def fz1(x):
+#     return np.array([[z1u(x)], [z1l(x)]])
+#
+#
+# def fw1(x):
+#     return np.array([[w1u(x)], [w1l(x)]])
+#
+#
+# Az0 = alpha_t2(fz0, 300, 0, 4, 100, 300)
+# Aw0 = alpha_t2(fw0, 300, 0, 4, 100, 300)
+# Az1 = alpha_t2(fz1, 300, 0, 4, 100, 300)
+# Aw1 = alpha_t2(fw1, 300, 0, 4, 100, 300)
+#
+#
+# def lwa_u(x):
+#     return mu_sf(x, Au)
+#
+#
+# def lwa_l(x):
+#     return mu_sf(x, Al)
+#
+#
+# lwa_fou = fouset(lwa_u, lwa_l, 0, 10, 0.04, 0.012)
+#
+# c = t2_centroid(Au, Al, 300)
+# cl = c[0]
+# cr = c[1]
+# m = defuzz(c)
+#
+# auz = [Az0[0], Az1[0]]
+# alz = [Az0[1], Az1[1]]
+#
+# auw = [Aw0[0], Aw1[0]]
+# alw = [Aw0[1], Aw1[1]]
+#
+# r = -10
+#
+# alpha_wpm = alpha_to_alpha_t2wpm(auz, alz, auw, alw, r)
+#
+#
+# def wpm_u(x):
+#     return mu_sf(x, alpha_wpm[0])
+#
+#
+# def wpm_l(x):
+#     return mu_sf(x, alpha_wpm[1])
+#
+#
+# wpm_fou = fouset(wpm_u, wpm_l, 0, 10, 0.04, 0.013)
 
 # # PLOTTING CODE HERE
 # x_values = np.arange(0, 10.01, 0.01)

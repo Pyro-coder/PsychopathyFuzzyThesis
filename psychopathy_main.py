@@ -175,11 +175,26 @@ alpha_7 = np.array([alpha_very_bad, alpha_bad, alpha_somewhat_bad, alpha_fair, a
                     alpha_very_good])
 
 file_path = "excel/PCLRWords.xlsx"
-sheet_name = "Words"
-words = pd.read_excel(file_path, sheet_name=sheet_name, usecols="A:H", skiprows=2, nrows=20, header=None)
+words = pd.read_excel(file_path, sheet_name="Words", usecols="A:H", skiprows=2, nrows=20, header=None)
 
-sheet_name = "Scores"
-score_sheet = pd.read_excel(file_path, sheet_name=sheet_name, usecols="A:C", nrows=21)
+score_sheet = pd.read_excel(file_path, sheet_name="Scores", usecols="A:C", nrows=21)
+
+scores = score_sheet['Scoring']
+trait_weights = score_sheet['Weights']
+
+vocab = score_sheet['Factors']
+vocab = vocab.to_frame()
+vocab['Vocab'] = 7
 
 
+def create_scoredata():
+    out = pd.DataFrame(index=score_sheet['Factors'], columns=['Alpha Cuts'])
+    for i in range(20):
+        for j in range(vocab.iloc[i, 1]):
+            if scores[i] == words.at[i, j + 1]:
+                out.at[score_sheet['Factors'][i], 'Alpha Cuts'] = alpha_7[j]
+    return out
 
+
+score_data = create_scoredata()
+print(score_data)
