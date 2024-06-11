@@ -179,7 +179,7 @@ alpha_7 = np.array([alpha_very_bad, alpha_bad, alpha_somewhat_bad, alpha_fair, a
 file_path = "excel/PCLRWords.xlsx"
 words = pd.read_excel(file_path, sheet_name="Words", usecols="A:H", skiprows=2, nrows=20, header=None)
 
-weight_full_vocab = pd.read_excel(file_path, sheet_name="Words", usecols="B:E", skiprows=26, nrows=1, header=None)
+weight_words = pd.read_excel(file_path, sheet_name="Words", usecols="B:E", skiprows=26, nrows=1, header=None)
 
 score_sheet = pd.read_excel(file_path, sheet_name="Scores", usecols="A:C", nrows=21)
 
@@ -279,13 +279,14 @@ vocab_4 = score_sheet['Weights']
 vocab_4 = vocab_4.to_frame()
 vocab_4['Vocab'] = 4
 
-# TODO: Troubleshoot the following
+
 def create_weightdata():
-    out = pd.DataFrame(index=score_sheet['Weights'], columns=['Alpha Cuts'])
+    out = pd.DataFrame(index=score_sheet['Factors'], columns=['Alpha Cuts'])
     for i in range(20):
         for j in range(vocab_4.iloc[i, 1]):
-            if trait_weights[i] == weight_full_vocab.at[j + 1, 0]:
-                out.at[score_sheet['Weights'][i], 'Alpha Cuts'] = alpha_4[j]
+            if trait_weights[i] == weight_words.at[0, j + 1]:
+                # Convert the array to a list before assigning it to the DataFrame
+                out.at[score_sheet['Factors'][i], 'Alpha Cuts'] = alpha_4[j]
     return out
 
 
