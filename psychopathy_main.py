@@ -1,3 +1,5 @@
+import fou_points
+import trapezoid
 import trapezoid as tpz
 import support_interval as si
 import alpha_cut_algorithm as aca
@@ -177,6 +179,8 @@ alpha_7 = np.array([alpha_very_bad, alpha_bad, alpha_somewhat_bad, alpha_fair, a
 file_path = "excel/PCLRWords.xlsx"
 words = pd.read_excel(file_path, sheet_name="Words", usecols="A:H", skiprows=2, nrows=20, header=None)
 
+weight_full_vocab = pd.read_excel(file_path, sheet_name="Words", usecols="B:E", skiprows=26, nrows=1, header=None)
+
 score_sheet = pd.read_excel(file_path, sheet_name="Scores", usecols="A:C", nrows=21)
 
 scores = score_sheet['Scoring']
@@ -198,3 +202,92 @@ def create_scoredata():
 
 score_data = create_scoredata()
 print(score_data)
+
+
+# Define 4 word vocabulary
+
+def Ul(x):
+    return trapezoid.trap(x, 1, 0, 0, 1, 3)
+
+
+def Uu(x):
+    return trapezoid.trap(x, 1, 0, 0, 1, 5.96)
+
+
+def MLUl(x):
+    return trapezoid.trap(x, 1, 1.98, 3, 3.5, 4.6)
+
+
+def MLUu(x):
+    return trapezoid.trap(x, 1, 0, 3, 3.5, 6.32)
+
+
+def MLIl(x):
+    return trapezoid.trap(x, 1, 4.62, 6.1, 6.5, 7.69)
+
+
+def MLIu(x):
+    return trapezoid.trap(x, 1, 3.98, 6.1, 6.5, 9.04)
+
+
+def VIl(x):
+    return trapezoid.trap(x, 1, 6.77, 8, 10, 10)
+
+
+def VIu(x):
+    return trapezoid.trap(x, 1, 4.52, 8, 10, 10)
+
+
+Ufou = fou_points.fouset(Uu, Ul, 0, 10, 0.1, 0.035)
+MLUfou = fou_points.fouset(MLUu, MLUl, 0, 10, 0.09, 0.025)
+MLIfou = fou_points.fouset(MLIu, MLIl, 0, 10, 0.011, 0.0355)
+VIfou = fou_points.fouset(VIu, VIl, 0, 10, 0.095, 0.0255)
+
+
+def z4_lower(x):
+    return np.array([Ul(x), MLUl(x), MLIl(x), VIl(x)])
+
+
+def z4_upper(x):
+    return np.array([Uu(x), MLUu(x), MLIu(x), VIu(x)])
+
+
+def f_U(x):
+    return np.array([z4_upper(x)[0], z4_lower(x)[0]])
+
+
+def f_MLU(x):
+    return np.array([z4_upper(x)[1], z4_lower(x)[1]])
+
+
+def f_MLI(x):
+    return np.array([z4_upper(x)[2], z4_lower(x)[2]])
+
+
+def f_VI(x):
+    return np.array([z4_upper(x)[3], z4_lower(x)[3]])
+
+
+alpha_U = acpm.alpha_t2(f_U, 1000, 0, 10, 100, 300)
+alpha_MLU = acpm.alpha_t2(f_MLU, 1000, 0, 10, 100, 300)
+alpha_MLI = acpm.alpha_t2(f_MLI, 1000, 0, 10, 100, 300)
+alpha_VI = acpm.alpha_t2(f_VI, 1000, 0, 10, 100, 300)
+
+alpha_4 = np.array([alpha_U, alpha_MLU, alpha_MLI, alpha_VI])
+
+vocab_4 = score_sheet['Weights']
+vocab_4 = vocab_4.to_frame()
+vocab_4['Vocab'] = 4
+
+# TODO: Troubleshoot the following
+def create_weightdata():
+    out = pd.DataFrame(index=score_sheet['Weights'], columns=['Alpha Cuts'])
+    for i in range(20):
+        for j in range(vocab_4.iloc[i, 1]):
+            if trait_weights[i] == weight_full_vocab.at[j + 1, 0]:
+                out.at[score_sheet['Weights'][i], 'Alpha Cuts'] = alpha_4[j]
+    return out
+
+
+weight_data = create_weightdata()
+print(weight_data)
